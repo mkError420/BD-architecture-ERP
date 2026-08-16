@@ -47,7 +47,7 @@ export default function Header({ onMenuClick }) {
 
         {/* Brand on small screens */}
         <div className="flex items-center gap-2 lg:hidden">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-600 to-amber-500 flex items-center justify-center text-white">
+          <div className="w-8 h-8 rounded-xl flex items-center justify-center text-white" style={{ background: 'linear-gradient(to bottom right, #A0975A, #8a824a)' }}>
             <Building2 size={18} />
           </div>
           <span className="font-extrabold text-slate-900 text-sm hidden sm:inline">Buildium-solution</span>
@@ -91,7 +91,7 @@ export default function Header({ onMenuClick }) {
             onClick={() => setDropdownOpen(!dropdownOpen)}
             className="flex items-center gap-2 p-1 sm:px-2.5 sm:py-1 rounded-xl hover:bg-slate-100 transition-colors border border-transparent hover:border-slate-200"
           >
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white font-bold text-xs shadow-xs">
+            <div className="w-8 h-8 rounded-xl flex items-center justify-center text-white font-bold text-xs shadow-xs" style={{ background: 'linear-gradient(to bottom right, #A0975A, #8a824a)' }}>
               {user?.name?.charAt(0)?.toUpperCase() || 'A'}
             </div>
             <div className="hidden sm:block text-left max-w-[130px]">

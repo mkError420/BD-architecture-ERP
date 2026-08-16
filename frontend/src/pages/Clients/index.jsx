@@ -380,7 +380,7 @@ export default function Clients() {
         {selectedClient && (
           <div className="space-y-4 text-sm">
             <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100 flex items-center gap-4">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary-600 to-accent-500 text-white flex items-center justify-center font-bold text-xl">
+              <div className="w-14 h-14 rounded-2xl text-white flex items-center justify-center font-bold text-xl" style={{ background: 'linear-gradient(to bottom right, #A0975A, #8a824a)' }}>
                 {selectedClient.name.charAt(0)}
               </div>
               <div>

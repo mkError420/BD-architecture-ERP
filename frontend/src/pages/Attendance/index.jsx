@@ -296,13 +296,11 @@ export default function Attendance() {
                             onClick={() => handleStatusChange(emp.id, st)}
                             className={`px-2.5 py-1 text-xs font-semibold rounded-lg capitalize transition-all
                               ${rec.status === st
-                                ? st === 'present' ? 'bg-emerald-600 text-white shadow-sm'
-                                  : st === 'absent' ? 'bg-red-600 text-white shadow-sm'
-                                  : st === 'half_day' ? 'bg-amber-500 text-white shadow-sm'
-                                  : 'bg-purple-600 text-white shadow-sm'
+                                ? 'text-white shadow-sm'
                                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                               }
                             `}
+                            style={rec.status === st ? { backgroundColor: st === 'half_day' ? '#f59e0b' : (st === 'leave' ? '#9333ea' : '#A0975A') } : {}}
                           >
                             {st === 'half_day' ? 'Half' : st}
                           </button>

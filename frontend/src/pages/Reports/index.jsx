@@ -113,10 +113,11 @@ export default function Reports() {
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all
                 ${activeTab === tab.id
-                  ? 'bg-primary-600 text-white shadow-md shadow-primary-600/30'
+                  ? 'text-white shadow-md'
                   : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
                 }
               `}
+              style={activeTab === tab.id ? { backgroundColor: '#A0975A', boxShadow: '0 4px 6px -1px rgba(160, 151, 90, 0.3)' } : {}}
             >
               <Icon size={16} /> {tab.label}
             </button>

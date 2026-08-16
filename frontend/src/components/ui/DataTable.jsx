@@ -106,9 +106,10 @@ export default function DataTable({
                   onClick={() => onPageChange(pageNum)}
                   className={`w-8 h-8 rounded-lg text-xs font-bold transition-all ${
                     pageNum === pagination.page
-                      ? 'bg-blue-600 text-white shadow-sm'
+                      ? 'text-white shadow-sm'
                       : 'hover:bg-slate-100 text-slate-600 border border-slate-200/80 bg-white'
                   }`}
+                  style={pageNum === pagination.page ? { backgroundColor: '#A0975A' } : {}}
                 >
                   {pageNum}
                 </button>

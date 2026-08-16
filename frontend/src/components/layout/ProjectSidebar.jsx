@@ -159,7 +159,7 @@ export default function ProjectSidebar({ isOpen, onClose, projectId }) {
         {/* Header */}
         <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200 bg-gray-50">
           <div className="flex items-center gap-2 overflow-hidden">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center flex-shrink-0">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: 'linear-gradient(to bottom right, #A0975A, #8a824a)' }}>
               <FileText size={18} className="text-white" />
             </div>
             <h2 className="text-sm font-bold text-gray-900 truncate">Project Overview</h2>

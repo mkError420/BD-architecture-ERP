@@ -666,8 +666,9 @@ export default function ProjectDetails() {
                 {tab.count !== null && (
                   <span
                     className={`text-[11px] px-2 py-0.5 rounded-full font-bold ${
-                      isActive ? 'bg-primary-600 text-white' : 'bg-gray-100 text-gray-600'
+                      isActive ? 'text-white' : 'bg-gray-100 text-gray-600'
                     }`}
+                    style={isActive ? { backgroundColor: '#A0975A' } : {}}
                   >
                     {tab.count}
                   </span>

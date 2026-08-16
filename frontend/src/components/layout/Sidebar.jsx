@@ -43,7 +43,7 @@ export default function Sidebar({ isOpen, mobileOpen, onClose, onToggle }) {
         {/* Brand Header */}
         <div className="flex items-center justify-between h-16 px-4 border-b border-slate-800/80 bg-slate-950/60">
           <div className="flex items-center gap-3 overflow-hidden">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500 via-blue-600 to-amber-500 flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-500/20">
+            <div className="w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg" style={{ background: 'linear-gradient(to bottom right, #A0975A, #8a824a)', boxShadow: '0 10px 15px -3px rgba(160, 151, 90, 0.2)' }}>
               <Building2 size={22} className="text-white" />
             </div>
             {isOpen && (
@@ -84,9 +84,10 @@ export default function Sidebar({ isOpen, mobileOpen, onClose, onToggle }) {
                 onClick={onClose}
                 className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 ${
                   isActive
-                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30 font-bold'
+                    ? 'text-white shadow-lg font-bold'
                     : 'text-slate-400 hover:text-slate-100 hover:bg-slate-900/80'
                 } ${!isOpen ? 'justify-center px-0' : ''}`}
+                style={isActive ? { backgroundColor: '#A0975A', boxShadow: '0 10px 15px -3px rgba(160, 151, 90, 0.3)' } : {}}
                 title={!isOpen ? item.label : undefined}
               >
                 <Icon size={19} className={`flex-shrink-0 ${isActive ? 'text-white' : 'text-slate-400'}`} />
