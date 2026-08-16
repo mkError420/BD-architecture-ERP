@@ -1,18 +1,18 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { 
-  Building2, 
-  Mail, 
-  Lock, 
-  LogIn, 
-  Eye, 
-  EyeOff, 
-  ShieldCheck, 
-  HardHat, 
-  TrendingUp, 
-  FileCheck2, 
-  Users2, 
+import {
+  Building2,
+  Mail,
+  Lock,
+  LogIn,
+  Eye,
+  EyeOff,
+  ShieldCheck,
+  HardHat,
+  TrendingUp,
+  FileCheck2,
+  Users2,
   CheckCircle2,
   Sparkles,
   ArrowRight
@@ -48,18 +48,18 @@ export default function Login() {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-indigo-600/10 rounded-full blur-[160px] pointer-events-none" />
 
       {/* Subtle Grid Blueprint Pattern */}
-      <div 
-        className="absolute inset-0 opacity-[0.04] pointer-events-none" 
-        style={{ 
-          backgroundImage: `radial-gradient(#ffffff 1px, transparent 1px)`, 
-          backgroundSize: '32px 32px' 
-        }} 
+      <div
+        className="absolute inset-0 opacity-[0.04] pointer-events-none"
+        style={{
+          backgroundImage: `radial-gradient(#ffffff 1px, transparent 1px)`,
+          backgroundSize: '32px 32px'
+        }}
       />
 
       {/* Main Centered Container */}
       <div className="w-full max-w-6xl mx-auto relative z-10 my-auto py-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-          
+
           {/* Left Column: Brand Hero & Value Propositions */}
           <div className="lg:col-span-7 flex flex-col justify-center px-2 sm:px-4 lg:pr-6">
             {/* Brand Logo & Name */}
@@ -71,7 +71,7 @@ export default function Login() {
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-2xl font-black tracking-tight text-white">BuilderPro</span>
+                  <span className="text-2xl font-black tracking-tight text-white">Buildium-solution</span>
                   <span className="text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-400/30">
                     ERP v2.4
                   </span>
@@ -84,7 +84,6 @@ export default function Login() {
 
             {/* Industry Pill Badge */}
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-300 text-xs font-semibold mb-5 w-fit shadow-xs">
-              <ShieldCheck size={15} className="text-blue-400" />
               <span>Tailored for Bangladesh Construction & Real Estate</span>
             </div>
 
@@ -98,16 +97,13 @@ export default function Login() {
 
             {/* Subtitle */}
             <p className="text-slate-300 text-sm sm:text-base mt-4 leading-relaxed max-w-xl">
-              Track daily site attendance, material inventory, BDT budgeting, contractor work orders, 
+              Track daily site attendance, material inventory, BDT budgeting, contractor work orders,
               RAJUK compliance vault, and automated client billing in one unified system.
             </p>
 
             {/* Feature Highlights Grid */}
             <div className="grid grid-cols-2 gap-3.5 mt-7 max-w-xl">
               <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-slate-900/70 border border-slate-800/80 backdrop-blur-xs">
-                <div className="w-9 h-9 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400 shrink-0">
-                  <HardHat size={18} />
-                </div>
                 <div className="min-w-0">
                   <p className="text-xs font-bold text-slate-200 truncate">Daily Site Labor</p>
                   <p className="text-[11px] text-slate-400 truncate">Muster roll & wages</p>
@@ -115,9 +111,6 @@ export default function Login() {
               </div>
 
               <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-slate-900/70 border border-slate-800/80 backdrop-blur-xs">
-                <div className="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 shrink-0">
-                  <TrendingUp size={18} />
-                </div>
                 <div className="min-w-0">
                   <p className="text-xs font-bold text-slate-200 truncate">BDT Budget & BOQ</p>
                   <p className="text-[11px] text-slate-400 truncate">Real-time cost tracking</p>
@@ -125,9 +118,6 @@ export default function Login() {
               </div>
 
               <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-slate-900/70 border border-slate-800/80 backdrop-blur-xs">
-                <div className="w-9 h-9 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-400 shrink-0">
-                  <FileCheck2 size={18} />
-                </div>
                 <div className="min-w-0">
                   <p className="text-xs font-bold text-slate-200 truncate">RAJUK Compliance</p>
                   <p className="text-[11px] text-slate-400 truncate">Permits & approvals</p>
@@ -135,9 +125,6 @@ export default function Login() {
               </div>
 
               <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-slate-900/70 border border-slate-800/80 backdrop-blur-xs">
-                <div className="w-9 h-9 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-400 shrink-0">
-                  <Users2 size={18} />
-                </div>
                 <div className="min-w-0">
                   <p className="text-xs font-bold text-slate-200 truncate">Vendor Invoicing</p>
                   <p className="text-[11px] text-slate-400 truncate">VAT & NBR ready</p>
@@ -165,14 +152,14 @@ export default function Login() {
           {/* Right Column: Sign In Card */}
           <div className="lg:col-span-5 flex justify-center w-full">
             <div className="w-full max-w-md bg-slate-900/95 border border-slate-700/80 backdrop-blur-xl rounded-3xl p-6 sm:p-8 shadow-2xl shadow-black/60 relative overflow-hidden">
-              
+
               {/* Subtle top card glow line */}
               <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-amber-500" />
 
               {/* Form Title */}
               <div className="mb-6">
                 <h2 className="text-2xl font-black text-white tracking-tight flex items-center gap-2">
-                  Sign In <Sparkles size={18} className="text-amber-400" />
+                  Sign In
                 </h2>
                 <p className="text-slate-400 text-xs sm:text-sm mt-1">
                   Access your enterprise construction management dashboard
@@ -250,7 +237,7 @@ export default function Login() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full h-12 bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl font-bold text-sm shadow-lg shadow-blue-600/30 transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer active:scale-[0.99] mt-2"
+                  className="w-full h-12 bg-[#D3C987] hover:bg-[#a0975a] text-black rounded-xl font-bold text-sm shadow-lg shadow-blue-600/30 transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer active:scale-[0.99] mt-2"
                 >
                   {loading ? (
                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -266,7 +253,7 @@ export default function Login() {
               <div className="mt-6 pt-5 border-t border-slate-800/80">
                 <div className="flex items-center justify-between mb-2.5">
                   <p className="text-xs font-bold text-blue-300 flex items-center gap-1.5">
-                    <HardHat size={14} className="text-amber-400" /> Default System Login:
+                    Default System Login:
                   </p>
                   <button
                     type="button"
@@ -276,8 +263,8 @@ export default function Login() {
                     Auto-Fill
                   </button>
                 </div>
-                
-                <div 
+
+                <div
                   onClick={() => handleFillDemo('admin@construction.com', 'password')}
                   className="p-3.5 bg-slate-950/70 hover:bg-slate-950 border border-slate-800 hover:border-blue-500/40 rounded-xl transition-all cursor-pointer group"
                 >
@@ -297,7 +284,7 @@ export default function Login() {
               {/* System Footer Note */}
               <div className="mt-5 text-center">
                 <p className="text-[11px] text-slate-500">
-                  © {new Date().getFullYear()} BuilderPro Systems Ltd. • All Rights Reserved.
+                  © {new Date().getFullYear()} Buildium-solution Ltd. • All Rights Reserved.
                 </p>
               </div>
 

@@ -48,7 +48,7 @@ export default function Sidebar({ isOpen, mobileOpen, onClose, onToggle }) {
             </div>
             {isOpen && (
               <div className="truncate">
-                <h1 className="text-base font-extrabold tracking-tight text-white leading-tight">BuilderPro</h1>
+                <h1 className="text-base font-extrabold tracking-tight text-white leading-tight">Buildium-solution</h1>
                 <p className="text-[10px] text-blue-400 font-semibold tracking-wider uppercase">Bangladesh CMS</p>
               </div>
             )}

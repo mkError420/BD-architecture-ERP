@@ -50,7 +50,7 @@ export default function Header({ onMenuClick }) {
           <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-600 to-amber-500 flex items-center justify-center text-white">
             <Building2 size={18} />
           </div>
-          <span className="font-extrabold text-slate-900 text-sm hidden sm:inline">BuilderPro</span>
+          <span className="font-extrabold text-slate-900 text-sm hidden sm:inline">Buildium-solution</span>
         </div>
 
         {/* Global Search Bar */}

@@ -1,4 +1,4 @@
-# 🏗️ Bangladesh Construction Management Software (BuilderPro)
+# 🏗️ Bangladesh Construction Management Software (Buildium-solution)
 
 A full-stack, enterprise-grade Construction Management ERP designed specifically for Bangladesh's construction industry. Built with **React 18 + Vite**, **Tailwind CSS v4**, **PHP 8+ REST API**, and **MySQL 8**.
 
