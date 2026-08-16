@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { projectScheduleAPI } from '../../api';
-import { Calendar, Plus } from 'lucide-react';
+import { Calendar, Plus, Edit, Trash2 } from 'lucide-react';
 import DataTable from '../../components/ui/DataTable';
 import Modal from '../../components/ui/Modal';
 import DeleteConfirm from '../../components/ui/DeleteConfirm';
@@ -74,6 +74,43 @@ export default function ProjectScheduling() {
     }
   };
 
+  const handleEdit = (task) => {
+    setSelectedTask(task);
+    setFormData({
+      project_id: projectId,
+      task_name: task.task_name || '',
+      task_description: task.task_description || '',
+      start_date: task.start_date || new Date().toISOString().split('T')[0],
+      end_date: task.end_date || '',
+      status: task.status || 'not_started',
+      priority: task.priority || 'medium',
+      progress: task.progress || 0,
+      notes: task.notes || '',
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleDeleteClick = (task) => {
+    setSelectedTask(task);
+    setIsDeleteOpen(true);
+  };
+
+  const handleAddNew = () => {
+    setSelectedTask(null);
+    setFormData({
+      project_id: projectId,
+      task_name: '',
+      task_description: '',
+      start_date: new Date().toISOString().split('T')[0],
+      end_date: '',
+      status: 'not_started',
+      priority: 'medium',
+      progress: 0,
+      notes: '',
+    });
+    setIsModalOpen(true);
+  };
+
   const columns = [
     { header: 'Task Name', render: (row) => <span className="font-medium">{row.task_name}</span> },
     { header: 'Start Date', render: (row) => <span>{row.start_date}</span> },
@@ -81,6 +118,27 @@ export default function ProjectScheduling() {
     { header: 'Progress', render: (row) => <span>{row.progress}%</span> },
     { header: 'Status', render: (row) => <span className="capitalize">{row.status?.replace('_', ' ')}</span> },
     { header: 'Priority', render: (row) => <span className="capitalize">{row.priority}</span> },
+    {
+      header: 'Actions',
+      render: (row) => (
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => handleEdit(row)}
+            className="p-1.5 rounded-lg hover:bg-blue-50 text-blue-600 transition-colors"
+            title="Edit"
+          >
+            <Edit size={14} />
+          </button>
+          <button
+            onClick={() => handleDeleteClick(row)}
+            className="p-1.5 rounded-lg hover:bg-red-50 text-red-600 transition-colors"
+            title="Delete"
+          >
+            <Trash2 size={14} />
+          </button>
+        </div>
+      ),
+    },
   ];
 
   return (
@@ -95,14 +153,14 @@ export default function ProjectScheduling() {
             <p className="text-gray-500 text-sm">Manage project timeline and tasks</p>
           </div>
         </div>
-        <button onClick={() => setIsModalOpen(true)} className="btn-primary inline-flex items-center gap-2">
+        <button onClick={handleAddNew} className="btn-primary inline-flex items-center gap-2">
           <Plus size={18} /> Add Task
         </button>
       </div>
 
       <DataTable columns={columns} data={tasks} loading={loading} />
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Add Task" size="md">
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={selectedTask ? 'Edit Task' : 'Add Task'} size="md">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">

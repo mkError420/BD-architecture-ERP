@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { boqAPI } from '../../api';
-import { FileText, Plus } from 'lucide-react';
+import { FileText, Plus, Edit, Trash2 } from 'lucide-react';
 import DataTable from '../../components/ui/DataTable';
 import Modal from '../../components/ui/Modal';
 import DeleteConfirm from '../../components/ui/DeleteConfirm';
@@ -74,6 +74,41 @@ export default function BOQ() {
     }
   };
 
+  const handleEdit = (item) => {
+    setSelectedItem(item);
+    setFormData({
+      project_id: projectId,
+      category: item.category || '',
+      description: item.description || '',
+      unit: item.unit || 'piece',
+      quantity: item.quantity || '',
+      unit_rate: item.unit_rate || '',
+      work_type: item.work_type || 'civil',
+      notes: item.notes || '',
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleDeleteClick = (item) => {
+    setSelectedItem(item);
+    setIsDeleteOpen(true);
+  };
+
+  const handleAddNew = () => {
+    setSelectedItem(null);
+    setFormData({
+      project_id: projectId,
+      category: '',
+      description: '',
+      unit: 'piece',
+      quantity: '',
+      unit_rate: '',
+      work_type: 'civil',
+      notes: '',
+    });
+    setIsModalOpen(true);
+  };
+
   const columns = [
     { header: 'Item Code', render: (row) => <span className="font-mono text-xs">{row.item_code}</span> },
     { header: 'Description', render: (row) => <span className="font-medium">{row.description}</span> },
@@ -81,6 +116,27 @@ export default function BOQ() {
     { header: 'Quantity', render: (row) => <span>{row.quantity} {row.unit}</span> },
     { header: 'Unit Rate', render: (row) => <span>৳{Number(row.unit_rate).toLocaleString()}</span> },
     { header: 'Total', render: (row) => <span className="font-bold">৳{Number(row.total_amount).toLocaleString()}</span> },
+    {
+      header: 'Actions',
+      render: (row) => (
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => handleEdit(row)}
+            className="p-1.5 rounded-lg hover:bg-blue-50 text-blue-600 transition-colors"
+            title="Edit"
+          >
+            <Edit size={14} />
+          </button>
+          <button
+            onClick={() => handleDeleteClick(row)}
+            className="p-1.5 rounded-lg hover:bg-red-50 text-red-600 transition-colors"
+            title="Delete"
+          >
+            <Trash2 size={14} />
+          </button>
+        </div>
+      ),
+    },
   ];
 
   return (
@@ -95,14 +151,14 @@ export default function BOQ() {
             <p className="text-gray-500 text-sm">Manage BOQ items and cost estimates</p>
           </div>
         </div>
-        <button onClick={() => setIsModalOpen(true)} className="btn-primary inline-flex items-center gap-2">
+        <button onClick={handleAddNew} className="btn-primary inline-flex items-center gap-2">
           <Plus size={18} /> Add BOQ Item
         </button>
       </div>
 
       <DataTable columns={columns} data={boqItems} loading={loading} />
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Add BOQ Item" size="md">
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={selectedItem ? 'Edit BOQ Item' : 'Add BOQ Item'} size="md">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">

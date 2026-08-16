@@ -638,6 +638,122 @@ export default function ProjectDetails() {
         </div>
       </div>
 
+      {/* Project Overview Navigation */}
+      <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-xs">
+        <h2 className="text-lg font-bold text-gray-900 mb-4">Project Overview</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+          <Link to={`/projects/${id}/info`} className="flex items-center gap-3 p-4 rounded-xl border border-gray-200 hover:border-primary-300 hover:bg-primary-50/50 transition-all group">
+            <div className="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center group-hover:bg-blue-100">
+              <Building2 size={20} />
+            </div>
+            <div>
+              <p className="font-semibold text-gray-900 text-sm">Project Info</p>
+              <p className="text-xs text-gray-500">Basic details & specs</p>
+            </div>
+          </Link>
+
+          <Link to={`/projects/${id}/payments/history`} className="flex items-center gap-3 p-4 rounded-xl border border-gray-200 hover:border-green-300 hover:bg-green-50/50 transition-all group">
+            <div className="w-10 h-10 rounded-lg bg-green-50 text-green-600 flex items-center justify-center group-hover:bg-green-100">
+              <DollarSign size={20} />
+            </div>
+            <div>
+              <p className="font-semibold text-gray-900 text-sm">Client Payments</p>
+              <p className="text-xs text-gray-500">Payment history</p>
+            </div>
+          </Link>
+
+          <Link to={`/projects/${id}/security-deposits`} className="flex items-center gap-3 p-4 rounded-xl border border-gray-200 hover:border-purple-300 hover:bg-purple-50/50 transition-all group">
+            <div className="w-10 h-10 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center group-hover:bg-purple-100">
+              <ShieldCheck size={20} />
+            </div>
+            <div>
+              <p className="font-semibold text-gray-900 text-sm">Security Deposits</p>
+              <p className="text-xs text-gray-500">Deposits & guarantees</p>
+            </div>
+          </Link>
+
+          <Link to={`/projects/${id}/boq/items`} className="flex items-center gap-3 p-4 rounded-xl border border-gray-200 hover:border-orange-300 hover:bg-orange-50/50 transition-all group">
+            <div className="w-10 h-10 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center group-hover:bg-orange-100">
+              <FileText size={20} />
+            </div>
+            <div>
+              <p className="font-semibold text-gray-900 text-sm">BOQ</p>
+              <p className="text-xs text-gray-500">Bill of Quantities</p>
+            </div>
+          </Link>
+
+          <Link to={`/projects/${id}/scheduling`} className="flex items-center gap-3 p-4 rounded-xl border border-gray-200 hover:border-cyan-300 hover:bg-cyan-50/50 transition-all group">
+            <div className="w-10 h-10 rounded-lg bg-cyan-50 text-cyan-600 flex items-center justify-center group-hover:bg-cyan-100">
+              <Calendar size={20} />
+            </div>
+            <div>
+              <p className="font-semibold text-gray-900 text-sm">Project Scheduling</p>
+              <p className="text-xs text-gray-500">Timeline & tasks</p>
+            </div>
+          </Link>
+
+          <Link to={`/projects/${id}/purchases/orders`} className="flex items-center gap-3 p-4 rounded-xl border border-gray-200 hover:border-pink-300 hover:bg-pink-50/50 transition-all group">
+            <div className="w-10 h-10 rounded-lg bg-pink-50 text-pink-600 flex items-center justify-center group-hover:bg-pink-100">
+              <Package size={20} />
+            </div>
+            <div>
+              <p className="font-semibold text-gray-900 text-sm">Purchases</p>
+              <p className="text-xs text-gray-500">Orders & requests</p>
+            </div>
+          </Link>
+
+          <Link to={`/projects/${id}/stock/inventory`} className="flex items-center gap-3 p-4 rounded-xl border border-gray-200 hover:border-amber-300 hover:bg-amber-50/50 transition-all group">
+            <div className="w-10 h-10 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center group-hover:bg-amber-100">
+              <Layers size={20} />
+            </div>
+            <div>
+              <p className="font-semibold text-gray-900 text-sm">Stock Management</p>
+              <p className="text-xs text-gray-500">Inventory & transfers</p>
+            </div>
+          </Link>
+
+          <Link to={`/projects/${id}/labour-wages`} className="flex items-center gap-3 p-4 rounded-xl border border-gray-200 hover:border-lime-300 hover:bg-lime-50/50 transition-all group">
+            <div className="w-10 h-10 rounded-lg bg-lime-50 text-lime-600 flex items-center justify-center group-hover:bg-lime-100">
+              <Users size={20} />
+            </div>
+            <div>
+              <p className="font-semibold text-gray-900 text-sm">Labour Wage Slips</p>
+              <p className="text-xs text-gray-500">Wage management</p>
+            </div>
+          </Link>
+
+          <Link to={`/projects/${id}/tools/inventory`} className="flex items-center gap-3 p-4 rounded-xl border border-gray-200 hover:border-slate-300 hover:bg-slate-50/50 transition-all group">
+            <div className="w-10 h-10 rounded-lg bg-slate-50 text-slate-600 flex items-center justify-center group-hover:bg-slate-100">
+              <HardHat size={20} />
+            </div>
+            <div>
+              <p className="font-semibold text-gray-900 text-sm">Tools Management</p>
+              <p className="text-xs text-gray-500">Tools inventory</p>
+            </div>
+          </Link>
+
+          <Link to={`/projects/${id}/salary-slips`} className="flex items-center gap-3 p-4 rounded-xl border border-gray-200 hover:border-rose-300 hover:bg-rose-50/50 transition-all group">
+            <div className="w-10 h-10 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center group-hover:bg-rose-100">
+              <Receipt size={20} />
+            </div>
+            <div>
+              <p className="font-semibold text-gray-900 text-sm">Salary Slips & Payments</p>
+              <p className="text-xs text-gray-500">Employee salaries</p>
+            </div>
+          </Link>
+
+          <Link to={`/projects/${id}/vehicles`} className="flex items-center gap-3 p-4 rounded-xl border border-gray-200 hover:border-indigo-300 hover:bg-indigo-50/50 transition-all group">
+            <div className="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center group-hover:bg-indigo-100">
+              <Car size={20} />
+            </div>
+            <div>
+              <p className="font-semibold text-gray-900 text-sm">Vehicle Work Slips & Payments</p>
+              <p className="text-xs text-gray-500">Vehicle usage</p>
+            </div>
+          </Link>
+        </div>
+      </div>
+
       {/* Interactive Tabs */}
       <div className="border-b border-gray-200 bg-white px-4 pt-2 rounded-t-2xl shadow-xs">
         <div className="flex flex-wrap gap-2 sm:gap-4 -mb-px">

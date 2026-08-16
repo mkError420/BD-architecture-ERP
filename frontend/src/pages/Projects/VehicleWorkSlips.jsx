@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { vehiclesAPI } from '../../api';
-import { Truck, Plus } from 'lucide-react';
+import { Truck, Plus, Edit, Trash2 } from 'lucide-react';
 import DataTable from '../../components/ui/DataTable';
 import Modal from '../../components/ui/Modal';
 import DeleteConfirm from '../../components/ui/DeleteConfirm';
@@ -76,6 +76,45 @@ export default function VehicleWorkSlips() {
     }
   };
 
+  const handleEdit = (vehicle) => {
+    setSelectedVehicle(vehicle);
+    setFormData({
+      project_id: projectId,
+      vehicle_number: vehicle.vehicle_number || '',
+      vehicle_type: vehicle.vehicle_type || 'truck',
+      driver_name: vehicle.driver_name || '',
+      work_date: vehicle.work_date || new Date().toISOString().split('T')[0],
+      work_hours: vehicle.work_hours || '',
+      hourly_rate: vehicle.hourly_rate || '',
+      fuel_cost: vehicle.fuel_cost || 0,
+      total_amount: vehicle.total_amount || '',
+      notes: vehicle.notes || '',
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleDeleteClick = (vehicle) => {
+    setSelectedVehicle(vehicle);
+    setIsDeleteOpen(true);
+  };
+
+  const handleAddNew = () => {
+    setSelectedVehicle(null);
+    setFormData({
+      project_id: projectId,
+      vehicle_number: '',
+      vehicle_type: 'truck',
+      driver_name: '',
+      work_date: new Date().toISOString().split('T')[0],
+      work_hours: '',
+      hourly_rate: '',
+      fuel_cost: 0,
+      total_amount: '',
+      notes: '',
+    });
+    setIsModalOpen(true);
+  };
+
   const columns = [
     { header: 'Vehicle Number', render: (row) => <span className="font-mono text-xs">{row.vehicle_number}</span> },
     { header: 'Type', render: (row) => <span className="capitalize">{row.vehicle_type}</span> },
@@ -83,6 +122,27 @@ export default function VehicleWorkSlips() {
     { header: 'Work Hours', render: (row) => <span>{row.work_hours}</span> },
     { header: 'Total Amount', render: (row) => <span className="font-bold">৳{Number(row.total_amount).toLocaleString()}</span> },
     { header: 'Work Date', render: (row) => <span>{row.work_date}</span> },
+    {
+      header: 'Actions',
+      render: (row) => (
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => handleEdit(row)}
+            className="p-1.5 rounded-lg hover:bg-blue-50 text-blue-600 transition-colors"
+            title="Edit"
+          >
+            <Edit size={14} />
+          </button>
+          <button
+            onClick={() => handleDeleteClick(row)}
+            className="p-1.5 rounded-lg hover:bg-red-50 text-red-600 transition-colors"
+            title="Delete"
+          >
+            <Trash2 size={14} />
+          </button>
+        </div>
+      ),
+    },
   ];
 
   return (
@@ -97,14 +157,14 @@ export default function VehicleWorkSlips() {
             <p className="text-gray-500 text-sm">Manage vehicle usage and payments</p>
           </div>
         </div>
-        <button onClick={() => setIsModalOpen(true)} className="btn-primary inline-flex items-center gap-2">
+        <button onClick={handleAddNew} className="btn-primary inline-flex items-center gap-2">
           <Plus size={18} /> Create Work Slip
         </button>
       </div>
 
       <DataTable columns={columns} data={vehicles} loading={loading} />
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Create Work Slip" size="md">
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={selectedVehicle ? 'Edit Work Slip' : 'Create Work Slip'} size="md">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>

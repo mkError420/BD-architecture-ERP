@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { purchasesAPI } from '../../api';
-import { ShoppingCart, Plus } from 'lucide-react';
+import { ShoppingCart, Plus, Edit, Trash2 } from 'lucide-react';
 import DataTable from '../../components/ui/DataTable';
 import Modal from '../../components/ui/Modal';
 import DeleteConfirm from '../../components/ui/DeleteConfirm';
@@ -74,6 +74,41 @@ export default function Purchases() {
     }
   };
 
+  const handleEdit = (purchase) => {
+    setSelectedPurchase(purchase);
+    setFormData({
+      project_id: projectId,
+      purchase_type: purchase.purchase_type || 'order',
+      supplier_id: purchase.supplier_id || '',
+      total_amount: purchase.total_amount || '',
+      purchase_date: purchase.purchase_date || new Date().toISOString().split('T')[0],
+      expected_delivery_date: purchase.expected_delivery_date || '',
+      status: purchase.status || 'pending',
+      notes: purchase.notes || '',
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleDeleteClick = (purchase) => {
+    setSelectedPurchase(purchase);
+    setIsDeleteOpen(true);
+  };
+
+  const handleAddNew = () => {
+    setSelectedPurchase(null);
+    setFormData({
+      project_id: projectId,
+      purchase_type: 'order',
+      supplier_id: '',
+      total_amount: '',
+      purchase_date: new Date().toISOString().split('T')[0],
+      expected_delivery_date: '',
+      status: 'pending',
+      notes: '',
+    });
+    setIsModalOpen(true);
+  };
+
   const columns = [
     { header: 'Purchase Code', render: (row) => <span className="font-mono text-xs">{row.purchase_code}</span> },
     { header: 'Supplier', render: (row) => <span>{row.supplier_name}</span> },
@@ -81,6 +116,27 @@ export default function Purchases() {
     { header: 'Amount', render: (row) => <span className="font-bold">৳{Number(row.total_amount).toLocaleString()}</span> },
     { header: 'Date', render: (row) => <span>{row.purchase_date}</span> },
     { header: 'Status', render: (row) => <span className="capitalize">{row.status}</span> },
+    {
+      header: 'Actions',
+      render: (row) => (
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => handleEdit(row)}
+            className="p-1.5 rounded-lg hover:bg-blue-50 text-blue-600 transition-colors"
+            title="Edit"
+          >
+            <Edit size={14} />
+          </button>
+          <button
+            onClick={() => handleDeleteClick(row)}
+            className="p-1.5 rounded-lg hover:bg-red-50 text-red-600 transition-colors"
+            title="Delete"
+          >
+            <Trash2 size={14} />
+          </button>
+        </div>
+      ),
+    },
   ];
 
   return (
@@ -95,14 +151,14 @@ export default function Purchases() {
             <p className="text-gray-500 text-sm">Manage purchase orders, requests, and quotations</p>
           </div>
         </div>
-        <button onClick={() => setIsModalOpen(true)} className="btn-primary inline-flex items-center gap-2">
+        <button onClick={handleAddNew} className="btn-primary inline-flex items-center gap-2">
           <Plus size={18} /> New Purchase
         </button>
       </div>
 
       <DataTable columns={columns} data={purchases} loading={loading} />
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Add Purchase" size="md">
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={selectedPurchase ? 'Edit Purchase' : 'Add Purchase'} size="md">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>

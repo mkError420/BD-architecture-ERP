@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { toolsAPI } from '../../api';
-import { Wrench, Plus } from 'lucide-react';
+import { Wrench, Plus, Edit, Trash2 } from 'lucide-react';
 import DataTable from '../../components/ui/DataTable';
 import Modal from '../../components/ui/Modal';
 import DeleteConfirm from '../../components/ui/DeleteConfirm';
@@ -74,6 +74,41 @@ export default function ToolsManagement() {
     }
   };
 
+  const handleEdit = (tool) => {
+    setSelectedTool(tool);
+    setFormData({
+      project_id: projectId,
+      tool_name: tool.tool_name || '',
+      tool_code: tool.tool_code || '',
+      category: tool.category || 'equipment',
+      status: tool.status || 'available',
+      purchase_date: tool.purchase_date || new Date().toISOString().split('T')[0],
+      tool_condition: tool.tool_condition || 'good',
+      notes: tool.notes || '',
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleDeleteClick = (tool) => {
+    setSelectedTool(tool);
+    setIsDeleteOpen(true);
+  };
+
+  const handleAddNew = () => {
+    setSelectedTool(null);
+    setFormData({
+      project_id: projectId,
+      tool_name: '',
+      tool_code: '',
+      category: 'equipment',
+      status: 'available',
+      purchase_date: new Date().toISOString().split('T')[0],
+      tool_condition: 'good',
+      notes: '',
+    });
+    setIsModalOpen(true);
+  };
+
   const columns = [
     { header: 'Tool Code', render: (row) => <span className="font-mono text-xs">{row.tool_code}</span> },
     { header: 'Tool Name', render: (row) => <span className="font-medium">{row.tool_name}</span> },
@@ -81,6 +116,27 @@ export default function ToolsManagement() {
     { header: 'Status', render: (row) => <span className="capitalize">{row.status}</span> },
     { header: 'Condition', render: (row) => <span className="capitalize">{row.tool_condition}</span> },
     { header: 'Purchase Date', render: (row) => <span>{row.purchase_date}</span> },
+    {
+      header: 'Actions',
+      render: (row) => (
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => handleEdit(row)}
+            className="p-1.5 rounded-lg hover:bg-blue-50 text-blue-600 transition-colors"
+            title="Edit"
+          >
+            <Edit size={14} />
+          </button>
+          <button
+            onClick={() => handleDeleteClick(row)}
+            className="p-1.5 rounded-lg hover:bg-red-50 text-red-600 transition-colors"
+            title="Delete"
+          >
+            <Trash2 size={14} />
+          </button>
+        </div>
+      ),
+    },
   ];
 
   return (
@@ -95,14 +151,14 @@ export default function ToolsManagement() {
             <p className="text-gray-500 text-sm">Manage tools inventory and assignments</p>
           </div>
         </div>
-        <button onClick={() => setIsModalOpen(true)} className="btn-primary inline-flex items-center gap-2">
+        <button onClick={handleAddNew} className="btn-primary inline-flex items-center gap-2">
           <Plus size={18} /> Add Tool
         </button>
       </div>
 
       <DataTable columns={columns} data={tools} loading={loading} />
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Add Tool" size="md">
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={selectedTool ? 'Edit Tool' : 'Add Tool'} size="md">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">

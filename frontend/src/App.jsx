@@ -30,6 +30,7 @@ import ProjectScheduling from './pages/Projects/ProjectScheduling';
 import Purchases from './pages/Projects/Purchases';
 import StockManagement from './pages/Projects/StockManagement';
 import LabourWages from './pages/Projects/LabourWages';
+import SalarySlips from './pages/Projects/SalarySlips';
 import ToolsManagement from './pages/Projects/ToolsManagement';
 import VehicleWorkSlips from './pages/Projects/VehicleWorkSlips';
 
@@ -93,6 +94,7 @@ export default function App() {
             <Route path="projects/:projectId/stock/transfers" element={<StockManagement />} />
             <Route path="projects/:projectId/stock/adjustments" element={<StockManagement />} />
             <Route path="projects/:projectId/labour-wages" element={<LabourWages />} />
+            <Route path="projects/:projectId/salary-slips" element={<SalarySlips />} />
             <Route path="projects/:projectId/tools/inventory" element={<ToolsManagement />} />
             <Route path="projects/:projectId/tools/assignments" element={<ToolsManagement />} />
             <Route path="projects/:projectId/tools/maintenance" element={<ToolsManagement />} />

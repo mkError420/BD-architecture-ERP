@@ -336,6 +336,17 @@ export default function Clients() {
               </select>
             </div>
 
+            <div>
+              <label className="form-label">Division</label>
+              <select
+                value={formData.division}
+                onChange={(e) => setFormData({ ...formData, division: e.target.value })}
+                className="form-input"
+              >
+                {BD_DIVISIONS.map(d => <option key={d} value={d}>{d}</option>)}
+              </select>
+            </div>
+
             <div className="sm:col-span-2">
               <label className="form-label">Full Address / Location</label>
               <input

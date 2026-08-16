@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { labourWagesAPI } from '../../api';
-import { Users, Plus } from 'lucide-react';
+import { Users, Plus, Edit, Trash2 } from 'lucide-react';
 import DataTable from '../../components/ui/DataTable';
 import Modal from '../../components/ui/Modal';
 import DeleteConfirm from '../../components/ui/DeleteConfirm';
@@ -77,6 +77,49 @@ export default function LabourWages() {
     }
   };
 
+  const handleEdit = (slip) => {
+    setSelectedSlip(slip);
+    setFormData({
+      project_id: projectId,
+      employee_id: slip.employee_id || '',
+      wage_type: slip.wage_type || 'daily',
+      work_days: slip.work_days || '',
+      daily_rate: slip.daily_rate || '',
+      overtime_hours: slip.overtime_hours || 0,
+      overtime_rate: slip.overtime_rate || 0,
+      bonus: slip.bonus || 0,
+      deduction: slip.deduction || 0,
+      total_amount: slip.total_amount || '',
+      payment_date: slip.payment_date || new Date().toISOString().split('T')[0],
+      notes: slip.notes || '',
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleDeleteClick = (slip) => {
+    setSelectedSlip(slip);
+    setIsDeleteOpen(true);
+  };
+
+  const handleAddNew = () => {
+    setSelectedSlip(null);
+    setFormData({
+      project_id: projectId,
+      employee_id: '',
+      wage_type: 'daily',
+      work_days: '',
+      daily_rate: '',
+      overtime_hours: 0,
+      overtime_rate: 0,
+      bonus: 0,
+      deduction: 0,
+      total_amount: '',
+      payment_date: new Date().toISOString().split('T')[0],
+      notes: '',
+    });
+    setIsModalOpen(true);
+  };
+
   const columns = [
     { header: 'Slip Code', render: (row) => <span className="font-mono text-xs">{row.slip_code}</span> },
     { header: 'Employee', render: (row) => <span>{row.employee_name}</span> },
@@ -84,6 +127,27 @@ export default function LabourWages() {
     { header: 'Days', render: (row) => <span>{row.work_days}</span> },
     { header: 'Total Amount', render: (row) => <span className="font-bold">৳{Number(row.total_amount).toLocaleString()}</span> },
     { header: 'Payment Date', render: (row) => <span>{row.payment_date}</span> },
+    {
+      header: 'Actions',
+      render: (row) => (
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => handleEdit(row)}
+            className="p-1.5 rounded-lg hover:bg-blue-50 text-blue-600 transition-colors"
+            title="Edit"
+          >
+            <Edit size={14} />
+          </button>
+          <button
+            onClick={() => handleDeleteClick(row)}
+            className="p-1.5 rounded-lg hover:bg-red-50 text-red-600 transition-colors"
+            title="Delete"
+          >
+            <Trash2 size={14} />
+          </button>
+        </div>
+      ),
+    },
   ];
 
   return (
@@ -98,14 +162,14 @@ export default function LabourWages() {
             <p className="text-gray-500 text-sm">Manage labour wages and payments</p>
           </div>
         </div>
-        <button onClick={() => setIsModalOpen(true)} className="btn-primary inline-flex items-center gap-2">
+        <button onClick={handleAddNew} className="btn-primary inline-flex items-center gap-2">
           <Plus size={18} /> Create Wage Slip
         </button>
       </div>
 
       <DataTable columns={columns} data={wageSlips} loading={loading} />
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Create Wage Slip" size="md">
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={selectedSlip ? 'Edit Wage Slip' : 'Create Wage Slip'} size="md">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>

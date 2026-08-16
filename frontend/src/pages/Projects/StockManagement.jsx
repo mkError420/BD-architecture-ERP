@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { stockAPI } from '../../api';
-import { Package, Plus } from 'lucide-react';
+import { Package, Plus, Edit, Trash2 } from 'lucide-react';
 import DataTable from '../../components/ui/DataTable';
 import Modal from '../../components/ui/Modal';
 import DeleteConfirm from '../../components/ui/DeleteConfirm';
@@ -75,6 +75,43 @@ export default function StockManagement() {
     }
   };
 
+  const handleEdit = (item) => {
+    setSelectedItem(item);
+    setFormData({
+      project_id: projectId,
+      material_id: item.material_id || '',
+      transaction_type: item.transaction_type || 'transfer_in',
+      quantity: item.quantity || '',
+      unit: item.unit || 'piece',
+      transaction_date: item.transaction_date || new Date().toISOString().split('T')[0],
+      source_location: item.source_location || '',
+      destination_location: item.destination_location || '',
+      notes: item.notes || '',
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleDeleteClick = (item) => {
+    setSelectedItem(item);
+    setIsDeleteOpen(true);
+  };
+
+  const handleAddNew = () => {
+    setSelectedItem(null);
+    setFormData({
+      project_id: projectId,
+      material_id: '',
+      transaction_type: 'transfer_in',
+      quantity: '',
+      unit: 'piece',
+      transaction_date: new Date().toISOString().split('T')[0],
+      source_location: '',
+      destination_location: '',
+      notes: '',
+    });
+    setIsModalOpen(true);
+  };
+
   const columns = [
     { header: 'Transaction Code', render: (row) => <span className="font-mono text-xs">{row.transaction_code}</span> },
     { header: 'Material', render: (row) => <span>{row.material_name}</span> },
@@ -82,6 +119,27 @@ export default function StockManagement() {
     { header: 'Quantity', render: (row) => <span>{row.quantity} {row.unit}</span> },
     { header: 'Date', render: (row) => <span>{row.transaction_date}</span> },
     { header: 'From/To', render: (row) => <span>{row.source_location || row.destination_location}</span> },
+    {
+      header: 'Actions',
+      render: (row) => (
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => handleEdit(row)}
+            className="p-1.5 rounded-lg hover:bg-blue-50 text-blue-600 transition-colors"
+            title="Edit"
+          >
+            <Edit size={14} />
+          </button>
+          <button
+            onClick={() => handleDeleteClick(row)}
+            className="p-1.5 rounded-lg hover:bg-red-50 text-red-600 transition-colors"
+            title="Delete"
+          >
+            <Trash2 size={14} />
+          </button>
+        </div>
+      ),
+    },
   ];
 
   return (
@@ -96,14 +154,14 @@ export default function StockManagement() {
             <p className="text-gray-500 text-sm">Manage inventory, transfers, and adjustments</p>
           </div>
         </div>
-        <button onClick={() => setIsModalOpen(true)} className="btn-primary inline-flex items-center gap-2">
+        <button onClick={handleAddNew} className="btn-primary inline-flex items-center gap-2">
           <Plus size={18} /> Add Stock
         </button>
       </div>
 
       <DataTable columns={columns} data={stockItems} loading={loading} />
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Add Stock Transaction" size="md">
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={selectedItem ? 'Edit Stock Transaction' : 'Add Stock Transaction'} size="md">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
