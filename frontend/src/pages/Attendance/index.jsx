@@ -28,11 +28,8 @@ export default function Attendance() {
         setProjects(res.data.data);
       }
     } catch (e) {
-      console.warn('Projects fallback');
-      setProjects([
-        { id: 1, name: 'Gulshan Heights Tower' },
-        { id: 2, name: 'Uttara Commercial Complex' },
-      ]);
+      console.error('Failed to load projects:', e);
+      setProjects([]);
     }
   };
 
@@ -48,12 +45,7 @@ export default function Attendance() {
       if (empRes.status === 'fulfilled' && empRes.value.data.success) {
         empList = empRes.value.data.data;
       } else {
-        empList = [
-          { id: 1, employee_code: 'EMP-00101', name: 'Md. Rafiqul Islam', role: 'supervisor', salary: 35000, salary_type: 'monthly' },
-          { id: 2, employee_code: 'EMP-00102', name: 'Al-Amin Mia', role: 'mason', salary: 850, salary_type: 'daily' },
-          { id: 3, employee_code: 'EMP-00103', name: 'Sujon Howlader', role: 'rod_binder', salary: 800, salary_type: 'daily' },
-          { id: 4, employee_code: 'EMP-00104', name: 'Kalam Hossain', role: 'electrician', salary: 900, salary_type: 'daily' },
-        ];
+        empList = [];
       }
       setEmployees(empList);
 

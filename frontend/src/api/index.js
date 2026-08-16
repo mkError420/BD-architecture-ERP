@@ -155,4 +155,85 @@ export const settingsAPI = {
   update: (data) => api.put('/settings', data),
 };
 
+// Project Payments
+export const projectPaymentsAPI = {
+  getAll: (params) => api.get('/project-payments', { params }),
+  getOne: (id) => api.get(`/project-payments/${id}`),
+  create: (data) => api.post('/project-payments', data),
+  update: (id, data) => api.put(`/project-payments/${id}`, data),
+  delete: (id) => api.delete(`/project-payments/${id}`),
+};
+
+// Security Deposits
+export const securityDepositsAPI = {
+  getAll: (params) => api.get('/security-deposits', { params }),
+  getOne: (id) => api.get(`/security-deposits/${id}`),
+  create: (data) => api.post('/security-deposits', data),
+  update: (id, data) => api.put(`/security-deposits/${id}`, data),
+  delete: (id) => api.delete(`/security-deposits/${id}`),
+};
+
+// BOQ
+export const boqAPI = {
+  getAll: (params) => api.get('/boq', { params }),
+  getOne: (id) => api.get(`/boq/${id}`),
+  create: (data) => api.post('/boq', data),
+  update: (id, data) => api.put(`/boq/${id}`, data),
+  delete: (id) => api.delete(`/boq/${id}`),
+};
+
+// Project Schedule
+export const projectScheduleAPI = {
+  getAll: (params) => api.get('/project-schedule', { params }),
+  getOne: (id) => api.get(`/project-schedule/${id}`),
+  create: (data) => api.post('/project-schedule', data),
+  update: (id, data) => api.put(`/project-schedule/${id}`, data),
+  delete: (id) => api.delete(`/project-schedule/${id}`),
+};
+
+// Purchases
+export const purchasesAPI = {
+  getAll: (params) => api.get('/purchases', { params }),
+  getOne: (id) => api.get(`/purchases/${id}`),
+  create: (data) => api.post('/purchases', data),
+  update: (id, data) => api.put(`/purchases/${id}`, data),
+  delete: (id) => api.delete(`/purchases/${id}`),
+};
+
+// Stock
+export const stockAPI = {
+  getAll: (params) => api.get('/stock', { params }),
+  getOne: (id) => api.get(`/stock/${id}`),
+  create: (data) => api.post('/stock', data),
+  update: (id, data) => api.put(`/stock/${id}`, data),
+  delete: (id) => api.delete(`/stock/${id}`),
+};
+
+// Labour Wages
+export const labourWagesAPI = {
+  getAll: (params) => api.get('/labour-wages', { params }),
+  getOne: (id) => api.get(`/labour-wages/${id}`),
+  create: (data) => api.post('/labour-wages', data),
+  update: (id, data) => api.put(`/labour-wages/${id}`, data),
+  delete: (id) => api.delete(`/labour-wages/${id}`),
+};
+
+// Tools
+export const toolsAPI = {
+  getAll: (params) => api.get('/tools', { params }),
+  getOne: (id) => api.get(`/tools/${id}`),
+  create: (data) => api.post('/tools', data),
+  update: (id, data) => api.put(`/tools/${id}`, data),
+  delete: (id) => api.delete(`/tools/${id}`),
+};
+
+// Vehicles
+export const vehiclesAPI = {
+  getAll: (params) => api.get('/vehicles', { params }),
+  getOne: (id) => api.get(`/vehicles/${id}`),
+  create: (data) => api.post('/vehicles', data),
+  update: (id, data) => api.put(`/vehicles/${id}`, data),
+  delete: (id) => api.delete(`/vehicles/${id}`),
+};
+
 export default api;

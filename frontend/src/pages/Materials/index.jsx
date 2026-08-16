@@ -45,15 +45,8 @@ export default function Materials() {
         if (res.data.pagination) setPagination(res.data.pagination);
       }
     } catch (err) {
-      console.warn('Fallback data for materials');
-      setMaterials([
-        { id: 1, material_code: 'MAT-00001', name: 'Shah Cement Special (PCC)', category: 'cement', unit: 'bag', unit_price: 540, min_stock_alert: 100, description: 'Portland Composite Cement - 50kg bag' },
-        { id: 2, material_code: 'MAT-00002', name: 'BSRM Xtreme 500W Rod (16mm)', category: 'rod_steel', unit: 'ton', unit_price: 98500, min_stock_alert: 5, description: '500 Grade TMT Rebar' },
-        { id: 3, material_code: 'MAT-00003', name: 'Sylhet Sand (FM 2.5)', category: 'sand', unit: 'cft', unit_price: 48, min_stock_alert: 500, description: 'Coarse Sand for concrete casting' },
-        { id: 4, material_code: 'MAT-00004', name: 'Auto Brick 1st Class', category: 'brick', unit: 'piece', unit_price: 13.5, min_stock_alert: 5000, description: 'Standard kiln automatic bricks' },
-        { id: 5, material_code: 'MAT-00005', name: 'Stone Chips 3/4" (Bholaganj)', category: 'aggregate', unit: 'cft', unit_price: 165, min_stock_alert: 400, description: 'Crushed stone aggregate for slab/column' },
-        { id: 6, material_code: 'MAT-00006', name: 'Berger Robbialac WeatherCoat Paint', category: 'paint', unit: 'drum', unit_price: 7200, min_stock_alert: 10, description: 'Exterior protective emulsion (18L)' },
-      ]);
+      console.error('Failed to load materials:', err);
+      setMaterials([]);
     } finally {
       setLoading(false);
     }

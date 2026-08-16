@@ -77,13 +77,8 @@ export default function WorkOrders() {
         if (res.data.pagination) setPagination(res.data.pagination);
       }
     } catch (err) {
-      console.warn('Fallback data for work orders');
-      setOrders([
-        { id: 1, order_code: 'WO-00001', project_name: 'Gulshan Heights Tower', title: '5th Floor Slab Casting & Shuttering', category: 'structure', assigned_name: 'Al-Amin Mia', start_date: '2025-08-10', due_date: '2025-08-25', status: 'in_progress', priority: 'urgent', progress: 70, estimated_cost: 450000 },
-        { id: 2, order_code: 'WO-00002', project_name: 'Gulshan Heights Tower', title: 'Ground Floor Piling Inspection & Concrete Test', category: 'foundation', assigned_name: 'Engr. Shafiul Alam', start_date: '2025-08-01', due_date: '2025-08-08', status: 'completed', priority: 'high', progress: 100, estimated_cost: 120000 },
-        { id: 3, order_code: 'WO-00003', project_name: 'Uttara Commercial Complex', title: 'Brickwork for 2nd Floor Partition Walls', category: 'masonry', assigned_name: 'Al-Amin Mia', start_date: '2025-08-12', due_date: '2025-08-30', status: 'in_progress', priority: 'medium', progress: 35, estimated_cost: 280000 },
-        { id: 4, order_code: 'WO-00004', project_name: 'Uttara Commercial Complex', title: 'Concealed Conduit Pipe Fitting (Electric)', category: 'electrical', assigned_name: 'Kalam Hossain', start_date: '2025-09-01', due_date: '2025-09-15', status: 'pending', priority: 'medium', progress: 0, estimated_cost: 150000 },
-      ]);
+      console.error('Failed to load work orders:', err);
+      setOrders([]);
     } finally {
       setLoading(false);
     }

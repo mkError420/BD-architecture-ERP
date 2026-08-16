@@ -27,37 +27,20 @@ export default function Dashboard() {
       const res = await dashboardAPI.getStats();
       setData(res.data.data);
     } catch (err) {
-      console.warn('Dashboard load failed, using rich demo fallback:', err);
+      console.error('Dashboard load failed:', err);
       setData({
         stats: {
-          total_projects: 24, active_projects: 8, completed_projects: 12,
-          total_clients: 45, total_employees: 156,
-          total_budget: 85000000, total_expenses: 42000000,
-          total_invoiced: 65000000, total_received: 52000000,
+          total_projects: 0, active_projects: 0, completed_projects: 0,
+          total_clients: 0, total_employees: 0,
+          total_budget: 0, total_expenses: 0,
+          total_invoiced: 0, total_received: 0,
         },
-        recent_projects: [
-          { id: 1, project_code: 'PRJ-00001', name: 'Gulshan Heights Tower', status: 'active', progress: 65, client_name: 'Rahman Real Estate', start_date: '2025-01-15', end_date: '2026-06-30' },
-          { id: 2, project_code: 'PRJ-00002', name: 'Uttara Commercial Complex', status: 'active', progress: 40, client_name: 'Karim Enterprises', start_date: '2025-03-01', end_date: '2026-12-31' },
-          { id: 3, project_code: 'PRJ-00003', name: 'Dhanmondi Residence', status: 'completed', progress: 100, client_name: 'Mr. Hasan', start_date: '2024-06-01', end_date: '2025-08-01' },
-          { id: 4, project_code: 'PRJ-00004', name: 'Mirpur Road Bridge', status: 'planning', progress: 10, client_name: 'Dhaka City Corp.', start_date: '2025-10-01', end_date: '2027-03-31' },
-          { id: 5, project_code: 'PRJ-00005', name: 'Banani Office Park', status: 'active', progress: 78, client_name: 'Tech BD Ltd.', start_date: '2024-11-01', end_date: '2026-02-28' },
-        ],
-        monthly_expenses: [
-          { month: '2025-03', total: 5200000 }, { month: '2025-04', total: 6800000 },
-          { month: '2025-05', total: 7500000 }, { month: '2025-06', total: 6200000 },
-          { month: '2025-07', total: 8100000 }, { month: '2025-08', total: 8200000 },
-        ],
-        monthly_invoices: [
-          { month: '2025-03', total: 8000000, paid: 6500000 }, { month: '2025-04', total: 9500000, paid: 8000000 },
-          { month: '2025-05', total: 11000000, paid: 9200000 }, { month: '2025-06', total: 10000000, paid: 8700000 },
-          { month: '2025-07', total: 12000000, paid: 10500000 }, { month: '2025-08', total: 14500000, paid: 9000000 },
-        ],
-        project_status: [
-          { status: 'planning', count: 4 }, { status: 'active', count: 8 },
-          { status: 'completed', count: 12 }, { status: 'on_hold', count: 2 },
-        ],
-        today_attendance: 89,
-        pending_work_orders: 15,
+        recent_projects: [],
+        monthly_expenses: [],
+        monthly_invoices: [],
+        project_status: [],
+        today_attendance: 0,
+        pending_work_orders: 0,
       });
     } finally {
       setLoading(false);

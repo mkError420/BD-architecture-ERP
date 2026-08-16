@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
+import ProjectSidebar from './ProjectSidebar';
 import Header from './Header';
 import {
   LayoutDashboard, FolderKanban, CalendarCheck, Wallet, Menu,
@@ -11,7 +12,11 @@ export default function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [mobileMoreOpen, setMobileMoreOpen] = useState(false);
+  const [projectSidebarOpen, setProjectSidebarOpen] = useState(true);
   const location = useLocation();
+
+  // Check if we're on a project details page
+  const isProjectPage = location.pathname.match(/^\/projects\/\d+/);
 
   const mobileNavItems = [
     { path: '/', label: 'Home', icon: LayoutDashboard },
@@ -50,6 +55,15 @@ export default function Layout() {
         onClose={() => setMobileSidebarOpen(false)}
         onToggle={() => setSidebarOpen(!sidebarOpen)}
       />
+
+      {/* Project Sidebar - Only shown on project pages */}
+      {isProjectPage && (
+        <ProjectSidebar
+          isOpen={projectSidebarOpen}
+          onClose={() => setProjectSidebarOpen(false)}
+          projectId={location.pathname.split('/')[2]}
+        />
+      )}
 
       {/* Main App Container */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">

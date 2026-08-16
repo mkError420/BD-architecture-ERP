@@ -51,8 +51,8 @@ export default function Expenses() {
       const res = await projectsAPI.getAll({ per_page: 100 });
       if (res.data.success) setProjects(res.data.data);
     } catch (e) {
-      console.warn('Fallback projects for expenses');
-      setProjects([{ id: 1, name: 'Gulshan Heights Tower' }, { id: 2, name: 'Uttara Commercial Complex' }]);
+      console.error('Failed to load projects:', e);
+      setProjects([]);
     }
   };
 
@@ -73,14 +73,9 @@ export default function Expenses() {
         if (res.data.total_amount) setTotalAmount(res.data.total_amount);
       }
     } catch (err) {
-      console.warn('Fallback data for expenses');
-      setExpenses([
-        { id: 1, expense_code: 'EXP-00001', title: '500 Bags Shah Cement Purchase', project_name: 'Gulshan Heights Tower', category: 'material', amount: 270000, expense_date: '2025-08-14', paid_to: 'Anwar Cement Supply', payment_method: 'bank_transfer', is_approved: 1 },
-        { id: 2, expense_code: 'EXP-00002', title: 'Weekly Labor Wage Disbursement (Site 1)', project_name: 'Gulshan Heights Tower', category: 'labor', amount: 185000, expense_date: '2025-08-12', paid_to: 'Site Workers Pool', payment_method: 'cash', is_approved: 1 },
-        { id: 3, expense_code: 'EXP-00003', title: 'Concrete Mixer & Hoist Rental', project_name: 'Uttara Commercial Complex', category: 'equipment', amount: 45000, expense_date: '2025-08-10', paid_to: 'Dhaka Machine Rentals', payment_method: 'mobile_banking', is_approved: 1 },
-        { id: 4, expense_code: 'EXP-00004', title: 'Soil Test & Geo-technical Lab Report', project_name: 'Uttara Commercial Complex', category: 'professional_fee', amount: 65000, expense_date: '2025-08-05', paid_to: 'BUET Testing Lab', payment_method: 'cheque', is_approved: 1 },
-      ]);
-      setTotalAmount(565000);
+      console.error('Failed to load expenses:', err);
+      setExpenses([]);
+      setTotalAmount(0);
     } finally {
       setLoading(false);
     }

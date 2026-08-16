@@ -378,6 +378,457 @@ CREATE TABLE activity_logs (
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
+-- ==================== CLIENT PAYMENTS ====================
+CREATE TABLE client_payments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    payment_code VARCHAR(30) UNIQUE NOT NULL,
+    project_id INT NOT NULL,
+    client_id INT NOT NULL,
+    payment_date DATE NOT NULL,
+    amount DECIMAL(15,2) NOT NULL,
+    payment_method ENUM('cash','bank_transfer','cheque','mobile_banking') DEFAULT 'cash',
+    bank_name VARCHAR(100),
+    account_number VARCHAR(50),
+    cheque_number VARCHAR(50),
+    transaction_ref VARCHAR(100),
+    payment_for ENUM('advance','milestone','final','retention','other') DEFAULT 'advance',
+    milestone_id INT,
+    notes TEXT,
+    received_by INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (project_id) REFERENCES projects(id),
+    FOREIGN KEY (client_id) REFERENCES clients(id),
+    FOREIGN KEY (received_by) REFERENCES users(id)
+);
+
+-- ==================== PAYMENT PLANS / MILESTONES ====================
+CREATE TABLE payment_milestones (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    project_id INT NOT NULL,
+    milestone_name VARCHAR(200) NOT NULL,
+    description TEXT,
+    target_amount DECIMAL(15,2) NOT NULL,
+    due_date DATE,
+    completion_percentage INT DEFAULT 0,
+    status ENUM('pending','partial','completed') DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (project_id) REFERENCES projects(id)
+);
+
+-- ==================== SECURITY DEPOSITS ====================
+CREATE TABLE security_deposits (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    deposit_code VARCHAR(30) UNIQUE NOT NULL,
+    project_id INT NOT NULL,
+    client_id INT NOT NULL,
+    deposit_type ENUM('earnest_money','security_money','performance_guarantee','retention_money','other') DEFAULT 'security_money',
+    amount DECIMAL(15,2) NOT NULL,
+    deposit_date DATE NOT NULL,
+    refund_date DATE,
+    status ENUM('active','refunded','forfeited','partial_refund') DEFAULT 'active',
+    refund_amount DECIMAL(15,2) DEFAULT 0,
+    bank_name VARCHAR(100),
+    account_number VARCHAR(50),
+    cheque_number VARCHAR(50),
+    transaction_ref VARCHAR(100),
+    notes TEXT,
+    received_by INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (project_id) REFERENCES projects(id),
+    FOREIGN KEY (client_id) REFERENCES clients(id),
+    FOREIGN KEY (received_by) REFERENCES users(id)
+);
+
+-- ==================== BOQ (BILL OF QUANTITIES) ====================
+CREATE TABLE boq_items (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    project_id INT NOT NULL,
+    item_code VARCHAR(30) NOT NULL,
+    category VARCHAR(100),
+    description TEXT NOT NULL,
+    unit ENUM('sqft','sft','cft','cum','kg','ton','meter','run_meter','piece','lot','each','no') DEFAULT 'piece',
+    quantity DECIMAL(14,3) NOT NULL,
+    unit_rate DECIMAL(12,2) NOT NULL,
+    total_amount DECIMAL(15,2) NOT NULL,
+    work_type ENUM('civil','electrical','plumbing','finishing','other') DEFAULT 'civil',
+    priority ENUM('high','medium','low') DEFAULT 'medium',
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (project_id) REFERENCES projects(id)
+);
+
+-- ==================== BOQ COST ESTIMATES ====================
+CREATE TABLE boq_estimates (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    project_id INT NOT NULL,
+    estimate_name VARCHAR(200) NOT NULL,
+    estimate_type ENUM('preliminary','detailed','revised') DEFAULT 'preliminary',
+    total_cost DECIMAL(18,2) NOT NULL,
+    contingency_percentage DECIMAL(5,2) DEFAULT 5,
+    contingency_amount DECIMAL(15,2) DEFAULT 0,
+    grand_total DECIMAL(18,2) NOT NULL,
+    prepared_by INT,
+    approved_by INT,
+    approved_at DATETIME,
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (project_id) REFERENCES projects(id),
+    FOREIGN KEY (prepared_by) REFERENCES users(id),
+    FOREIGN KEY (approved_by) REFERENCES users(id)
+);
+
+-- ==================== BOQ RATE ANALYSIS ====================
+CREATE TABLE boq_rate_analysis (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    boq_item_id INT NOT NULL,
+    material_cost DECIMAL(12,2) DEFAULT 0,
+    labor_cost DECIMAL(12,2) DEFAULT 0,
+    equipment_cost DECIMAL(12,2) DEFAULT 0,
+    overhead_cost DECIMAL(12,2) DEFAULT 0,
+    profit_percentage DECIMAL(5,2) DEFAULT 10,
+    profit_amount DECIMAL(12,2) DEFAULT 0,
+    final_rate DECIMAL(12,2) NOT NULL,
+    analysis_date DATE,
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (boq_item_id) REFERENCES boq_items(id)
+);
+
+-- ==================== PROJECT SCHEDULING ====================
+CREATE TABLE project_schedule (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    project_id INT NOT NULL,
+    task_name VARCHAR(200) NOT NULL,
+    task_description TEXT,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    actual_start_date DATE,
+    actual_end_date DATE,
+    duration_days INT,
+    progress INT DEFAULT 0,
+    status ENUM('not_started','in_progress','completed','delayed','on_hold') DEFAULT 'not_started',
+    priority ENUM('critical','high','medium','low') DEFAULT 'medium',
+    dependencies VARCHAR(255),
+    assigned_team VARCHAR(255),
+    notes TEXT,
+    created_by INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (project_id) REFERENCES projects(id),
+    FOREIGN KEY (created_by) REFERENCES users(id)
+);
+
+-- ==================== PURCHASE ORDERS ====================
+CREATE TABLE purchase_orders (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    order_code VARCHAR(30) UNIQUE NOT NULL,
+    project_id INT NOT NULL,
+    supplier_id INT NOT NULL,
+    order_date DATE NOT NULL,
+    expected_delivery_date DATE,
+    actual_delivery_date DATE,
+    subtotal DECIMAL(15,2) DEFAULT 0,
+    vat DECIMAL(12,2) DEFAULT 0,
+    discount DECIMAL(12,2) DEFAULT 0,
+    total_amount DECIMAL(15,2) NOT NULL,
+    paid_amount DECIMAL(15,2) DEFAULT 0,
+    status ENUM('draft','pending','approved','ordered','partial_delivered','delivered','cancelled') DEFAULT 'draft',
+    payment_terms VARCHAR(100),
+    delivery_address TEXT,
+    notes TEXT,
+    created_by INT,
+    approved_by INT,
+    approved_at DATETIME,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (project_id) REFERENCES projects(id),
+    FOREIGN KEY (supplier_id) REFERENCES suppliers(id),
+    FOREIGN KEY (created_by) REFERENCES users(id),
+    FOREIGN KEY (approved_by) REFERENCES users(id)
+);
+
+-- ==================== PURCHASE ORDER ITEMS ====================
+CREATE TABLE purchase_order_items (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    purchase_order_id INT NOT NULL,
+    material_id INT,
+    description VARCHAR(255) NOT NULL,
+    quantity DECIMAL(14,3) NOT NULL,
+    unit VARCHAR(20) DEFAULT 'piece',
+    unit_price DECIMAL(12,2) NOT NULL,
+    total DECIMAL(15,2) NOT NULL,
+    received_quantity DECIMAL(14,3) DEFAULT 0,
+    FOREIGN KEY (purchase_order_id) REFERENCES purchase_orders(id) ON DELETE CASCADE,
+    FOREIGN KEY (material_id) REFERENCES materials(id)
+);
+
+-- ==================== PURCHASE REQUESTS ====================
+CREATE TABLE purchase_requests (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    request_code VARCHAR(30) UNIQUE NOT NULL,
+    project_id INT NOT NULL,
+    requested_by INT NOT NULL,
+    request_date DATE NOT NULL,
+    required_date DATE,
+    status ENUM('pending','approved','rejected','ordered') DEFAULT 'pending',
+    priority ENUM('urgent','high','medium','low') DEFAULT 'medium',
+    reason TEXT,
+    approved_by INT,
+    approved_at DATETIME,
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (project_id) REFERENCES projects(id),
+    FOREIGN KEY (requested_by) REFERENCES users(id),
+    FOREIGN KEY (approved_by) REFERENCES users(id)
+);
+
+-- ==================== PURCHASE REQUEST ITEMS ====================
+CREATE TABLE purchase_request_items (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    purchase_request_id INT NOT NULL,
+    material_id INT,
+    description VARCHAR(255) NOT NULL,
+    quantity DECIMAL(14,3) NOT NULL,
+    unit VARCHAR(20) DEFAULT 'piece',
+    estimated_price DECIMAL(12,2),
+    purpose TEXT,
+    FOREIGN KEY (purchase_request_id) REFERENCES purchase_requests(id) ON DELETE CASCADE,
+    FOREIGN KEY (material_id) REFERENCES materials(id)
+);
+
+-- ==================== QUOTATIONS ====================
+CREATE TABLE quotations (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    quotation_code VARCHAR(30) UNIQUE NOT NULL,
+    project_id INT NOT NULL,
+    supplier_id INT NOT NULL,
+    quotation_date DATE NOT NULL,
+    valid_until DATE,
+    subtotal DECIMAL(15,2) DEFAULT 0,
+    vat DECIMAL(12,2) DEFAULT 0,
+    discount DECIMAL(12,2) DEFAULT 0,
+    total_amount DECIMAL(15,2) NOT NULL,
+    status ENUM('received','under_review','accepted','rejected','expired') DEFAULT 'received',
+    payment_terms VARCHAR(100),
+    delivery_terms VARCHAR(100),
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (project_id) REFERENCES projects(id),
+    FOREIGN KEY (supplier_id) REFERENCES suppliers(id)
+);
+
+-- ==================== QUOTATION ITEMS ====================
+CREATE TABLE quotation_items (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    quotation_id INT NOT NULL,
+    description VARCHAR(255) NOT NULL,
+    quantity DECIMAL(14,3) NOT NULL,
+    unit VARCHAR(20) DEFAULT 'piece',
+    unit_price DECIMAL(12,2) NOT NULL,
+    total DECIMAL(15,2) NOT NULL,
+    FOREIGN KEY (quotation_id) REFERENCES quotations(id) ON DELETE CASCADE
+);
+
+-- ==================== STOCK TRANSFERS ====================
+CREATE TABLE stock_transfers (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    transfer_code VARCHAR(30) UNIQUE NOT NULL,
+    from_project_id INT,
+    to_project_id INT NOT NULL,
+    transfer_date DATE NOT NULL,
+    status ENUM('pending','approved','in_transit','completed','cancelled') DEFAULT 'pending',
+    notes TEXT,
+    requested_by INT,
+    approved_by INT,
+    approved_at DATETIME,
+    received_by INT,
+    received_at DATETIME,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (from_project_id) REFERENCES projects(id),
+    FOREIGN KEY (to_project_id) REFERENCES projects(id),
+    FOREIGN KEY (requested_by) REFERENCES users(id),
+    FOREIGN KEY (approved_by) REFERENCES users(id),
+    FOREIGN KEY (received_by) REFERENCES users(id)
+);
+
+-- ==================== STOCK TRANSFER ITEMS ====================
+CREATE TABLE stock_transfer_items (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    stock_transfer_id INT NOT NULL,
+    material_id INT NOT NULL,
+    quantity DECIMAL(14,3) NOT NULL,
+    unit VARCHAR(20) DEFAULT 'piece',
+    notes TEXT,
+    FOREIGN KEY (stock_transfer_id) REFERENCES stock_transfers(id) ON DELETE CASCADE,
+    FOREIGN KEY (material_id) REFERENCES materials(id)
+);
+
+-- ==================== STOCK ADJUSTMENTS ====================
+CREATE TABLE stock_adjustments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    adjustment_code VARCHAR(30) UNIQUE NOT NULL,
+    project_id INT NOT NULL,
+    material_id INT NOT NULL,
+    adjustment_type ENUM('damage','loss','theft','expired','quality_issue','correction','other') DEFAULT 'correction',
+    previous_quantity DECIMAL(14,3) NOT NULL,
+    adjusted_quantity DECIMAL(14,3) NOT NULL,
+    difference DECIMAL(14,3) NOT NULL,
+    adjustment_date DATE NOT NULL,
+    reason TEXT,
+    approved_by INT,
+    created_by INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (project_id) REFERENCES projects(id),
+    FOREIGN KEY (material_id) REFERENCES materials(id),
+    FOREIGN KEY (approved_by) REFERENCES users(id),
+    FOREIGN KEY (created_by) REFERENCES users(id)
+);
+
+-- ==================== LABOUR WAGE SLIPS ====================
+CREATE TABLE labour_wage_slips (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    slip_code VARCHAR(30) UNIQUE NOT NULL,
+    project_id INT NOT NULL,
+    employee_id INT NOT NULL,
+    work_period_start DATE NOT NULL,
+    work_period_end DATE NOT NULL,
+    total_days INT DEFAULT 0,
+    present_days INT DEFAULT 0,
+    absent_days INT DEFAULT 0,
+    overtime_hours DECIMAL(5,2) DEFAULT 0,
+    daily_wage DECIMAL(10,2) DEFAULT 0,
+    basic_wage DECIMAL(12,2) DEFAULT 0,
+    overtime_pay DECIMAL(10,2) DEFAULT 0,
+    bonus DECIMAL(10,2) DEFAULT 0,
+    deduction DECIMAL(10,2) DEFAULT 0,
+    net_wage DECIMAL(12,2) NOT NULL,
+    payment_date DATE,
+    payment_method ENUM('cash','bank_transfer','mobile_banking') DEFAULT 'cash',
+    status ENUM('pending','paid') DEFAULT 'pending',
+    paid_by INT,
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (project_id) REFERENCES projects(id),
+    FOREIGN KEY (employee_id) REFERENCES employees(id),
+    FOREIGN KEY (paid_by) REFERENCES users(id)
+);
+
+-- ==================== TOOLS INVENTORY ====================
+CREATE TABLE tools_inventory (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    tool_code VARCHAR(30) UNIQUE NOT NULL,
+    tool_name VARCHAR(200) NOT NULL,
+    category ENUM('power_tools','hand_tools','measuring','safety_equipment','heavy_machinery','vehicles','other') DEFAULT 'other',
+    brand VARCHAR(100),
+    model VARCHAR(100),
+    serial_number VARCHAR(100),
+    purchase_date DATE,
+    purchase_price DECIMAL(12,2) DEFAULT 0,
+    current_value DECIMAL(12,2) DEFAULT 0,
+    tool_condition ENUM('excellent','good','fair','poor','broken') DEFAULT 'good',
+    location VARCHAR(100),
+    status ENUM('available','assigned','in_maintenance','retired') DEFAULT 'available',
+    warranty_expiry DATE,
+    last_service_date DATE,
+    next_service_date DATE,
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- ==================== TOOL ASSIGNMENTS ====================
+CREATE TABLE tool_assignments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    tool_id INT NOT NULL,
+    project_id INT NOT NULL,
+    assigned_to INT,
+    assigned_date DATE NOT NULL,
+    return_date DATE,
+    expected_return_date DATE,
+    status ENUM('assigned','returned','overdue','lost') DEFAULT 'assigned',
+    condition_on_assignment VARCHAR(50),
+    condition_on_return VARCHAR(50),
+    notes TEXT,
+    assigned_by INT,
+    received_by INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (tool_id) REFERENCES tools_inventory(id),
+    FOREIGN KEY (project_id) REFERENCES projects(id),
+    FOREIGN KEY (assigned_to) REFERENCES employees(id),
+    FOREIGN KEY (assigned_by) REFERENCES users(id),
+    FOREIGN KEY (received_by) REFERENCES users(id)
+);
+
+-- ==================== TOOL MAINTENANCE ====================
+CREATE TABLE tool_maintenance (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    tool_id INT NOT NULL,
+    maintenance_type ENUM('routine','repair','replacement','inspection') DEFAULT 'routine',
+    service_date DATE NOT NULL,
+    service_provider VARCHAR(150),
+    cost DECIMAL(12,2) DEFAULT 0,
+    description TEXT,
+    next_service_date DATE,
+    performed_by INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (tool_id) REFERENCES tools_inventory(id),
+    FOREIGN KEY (performed_by) REFERENCES users(id)
+);
+
+-- ==================== VEHICLES ====================
+CREATE TABLE vehicles (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    vehicle_code VARCHAR(30) UNIQUE NOT NULL,
+    vehicle_type ENUM('truck','pickup','car','motorcycle','excavator','bulldozer','crane','other') DEFAULT 'truck',
+    registration_number VARCHAR(50) UNIQUE NOT NULL,
+    make VARCHAR(100),
+    model VARCHAR(100),
+    year INT,
+    purchase_date DATE,
+    purchase_price DECIMAL(15,2) DEFAULT 0,
+    current_value DECIMAL(15,2) DEFAULT 0,
+    fuel_type ENUM('diesel','petrol','cng','electric','other') DEFAULT 'diesel',
+    capacity DECIMAL(10,2) DEFAULT 0,
+    status ENUM('available','in_use','maintenance','retired') DEFAULT 'available',
+    driver_id INT,
+    insurance_expiry DATE,
+    fitness_expiry DATE,
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (driver_id) REFERENCES employees(id)
+);
+
+-- ==================== VEHICLE WORK SLIPS ====================
+CREATE TABLE vehicle_work_slips (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    slip_code VARCHAR(30) UNIQUE NOT NULL,
+    project_id INT NOT NULL,
+    vehicle_id INT NOT NULL,
+    driver_id INT NOT NULL,
+    work_date DATE NOT NULL,
+    start_time TIME,
+    end_time TIME,
+    start_location VARCHAR(200),
+    end_location VARCHAR(200),
+    distance_km DECIMAL(8,2) DEFAULT 0,
+    fuel_consumed DECIMAL(8,2) DEFAULT 0,
+    fuel_cost DECIMAL(10,2) DEFAULT 0,
+    work_description TEXT,
+    daily_rate DECIMAL(10,2) DEFAULT 0,
+    overtime_hours DECIMAL(5,2) DEFAULT 0,
+    overtime_rate DECIMAL(10,2) DEFAULT 0,
+    total_amount DECIMAL(12,2) NOT NULL,
+    status ENUM('pending','approved','paid') DEFAULT 'pending',
+    approved_by INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (project_id) REFERENCES projects(id),
+    FOREIGN KEY (vehicle_id) REFERENCES vehicles(id),
+    FOREIGN KEY (driver_id) REFERENCES employees(id),
+    FOREIGN KEY (approved_by) REFERENCES users(id)
+);
+
 -- ==================== DEFAULT DATA ====================
 INSERT INTO users (name, email, password, role) VALUES 
 ('System Admin', 'admin@construction.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin');

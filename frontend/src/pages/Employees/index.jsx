@@ -57,14 +57,8 @@ export default function Employees() {
         if (res.data.pagination) setPagination(res.data.pagination);
       }
     } catch (err) {
-      console.warn('Demo fallback for employees');
-      setEmployees([
-        { id: 1, employee_code: 'EMP-00101', name: 'Md. Rafiqul Islam', role: 'supervisor', phone: '+880 1712-334411', salary_type: 'monthly', salary: 35000, nid: '19852691234567890', blood_group: 'B+', join_date: '2023-01-10', district: 'Dhaka' },
-        { id: 2, employee_code: 'EMP-00102', name: 'Al-Amin Mia', role: 'mason', phone: '+880 1823-445522', salary_type: 'daily', salary: 850, nid: '19922692233445566', blood_group: 'O+', join_date: '2024-02-15', district: 'Comilla' },
-        { id: 3, employee_code: 'EMP-00103', name: 'Sujon Howlader', role: 'rod_binder', phone: '+880 1934-556633', salary_type: 'daily', salary: 800, nid: '19952693344556677', blood_group: 'A+', join_date: '2024-03-01', district: 'Barishal' },
-        { id: 4, employee_code: 'EMP-00104', name: 'Engr. Shafiul Alam', role: 'engineer', phone: '+880 1745-667744', salary_type: 'monthly', salary: 55000, nid: '19902694455667788', blood_group: 'AB+', join_date: '2022-08-01', district: 'Dhaka' },
-        { id: 5, employee_code: 'EMP-00105', name: 'Kalam Hossain', role: 'electrician', phone: '+880 1856-778855', salary_type: 'daily', salary: 900, nid: '19892695566778899', blood_group: 'O-', join_date: '2024-05-10', district: 'Gazipur' },
-      ]);
+      console.error('Failed to load employees:', err);
+      setEmployees([]);
     } finally {
       setLoading(false);
     }

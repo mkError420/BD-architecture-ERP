@@ -48,13 +48,8 @@ export default function Clients() {
         if (res.data.pagination) setPagination(res.data.pagination);
       }
     } catch (err) {
-      console.warn('Demo fallback for clients');
-      setClients([
-        { id: 1, name: 'Engr. Mahbubur Rahman', company: 'Rahman Real Estate', phone: '+880 1711-234567', email: 'mahbub@rahmanbd.com', nid: '19882691234567890', district: 'Dhaka', client_type: 'corporate', address: 'Banani C/A, Road 11' },
-        { id: 2, name: 'Abdur Razzaq', company: 'Razzaq Builders & Housing', phone: '+880 1819-987654', email: 'razzaq@housing.com.bd', nid: '19752692233445566', district: 'Chittagong', client_type: 'corporate', address: 'Agrabad, Chittagong' },
-        { id: 3, name: 'Dr. Shahriar Kabir', company: 'Private Residence', phone: '+880 1912-334455', email: 'dr.shahriar@gmail.com', nid: '19902693344556677', district: 'Dhaka', client_type: 'individual', address: 'Sector 3, Uttara' },
-        { id: 4, name: 'Dhaka City Corporation', company: 'DNCC Zone 5', phone: '+880 1713-001122', email: 'zone5@dncc.gov.bd', nid: '', district: 'Dhaka', client_type: 'government', address: 'Gulshan-2, Dhaka' },
-      ]);
+      console.error('Failed to load clients:', err);
+      setClients([]);
     } finally {
       setLoading(false);
     }

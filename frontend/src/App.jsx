@@ -21,6 +21,18 @@ import Reports from './pages/Reports';
 import Users from './pages/Users';
 import Settings from './pages/Settings';
 
+// Project sub-pages
+import ProjectInfo from './pages/Projects/ProjectInfo';
+import ClientPayments from './pages/Projects/ClientPayments';
+import SecurityDeposits from './pages/Projects/SecurityDeposits';
+import BOQ from './pages/Projects/BOQ';
+import ProjectScheduling from './pages/Projects/ProjectScheduling';
+import Purchases from './pages/Projects/Purchases';
+import StockManagement from './pages/Projects/StockManagement';
+import LabourWages from './pages/Projects/LabourWages';
+import ToolsManagement from './pages/Projects/ToolsManagement';
+import VehicleWorkSlips from './pages/Projects/VehicleWorkSlips';
+
 // Protected Route Component
 function ProtectedRoute({ children, allowedRoles }) {
   const { user, loading } = useAuth();
@@ -63,6 +75,29 @@ export default function App() {
             <Route index element={<Dashboard />} />
             <Route path="projects" element={<Projects />} />
             <Route path="projects/:id" element={<ProjectDetails />} />
+            
+            {/* Project sub-routes */}
+            <Route path="projects/:projectId/info" element={<ProjectInfo />} />
+            <Route path="projects/:projectId/payments/history" element={<ClientPayments />} />
+            <Route path="projects/:projectId/payments/plans" element={<ClientPayments />} />
+            <Route path="projects/:projectId/payments/invoices" element={<ClientPayments />} />
+            <Route path="projects/:projectId/security-deposits" element={<SecurityDeposits />} />
+            <Route path="projects/:projectId/boq/items" element={<BOQ />} />
+            <Route path="projects/:projectId/boq/estimates" element={<BOQ />} />
+            <Route path="projects/:projectId/boq/rates" element={<BOQ />} />
+            <Route path="projects/:projectId/scheduling" element={<ProjectScheduling />} />
+            <Route path="projects/:projectId/purchases/orders" element={<Purchases />} />
+            <Route path="projects/:projectId/purchases/requests" element={<Purchases />} />
+            <Route path="projects/:projectId/purchases/quotations" element={<Purchases />} />
+            <Route path="projects/:projectId/stock/inventory" element={<StockManagement />} />
+            <Route path="projects/:projectId/stock/transfers" element={<StockManagement />} />
+            <Route path="projects/:projectId/stock/adjustments" element={<StockManagement />} />
+            <Route path="projects/:projectId/labour-wages" element={<LabourWages />} />
+            <Route path="projects/:projectId/tools/inventory" element={<ToolsManagement />} />
+            <Route path="projects/:projectId/tools/assignments" element={<ToolsManagement />} />
+            <Route path="projects/:projectId/tools/maintenance" element={<ToolsManagement />} />
+            <Route path="projects/:projectId/vehicles" element={<VehicleWorkSlips />} />
+            
             <Route path="clients" element={<Clients />} />
             <Route path="employees" element={<Employees />} />
             <Route path="attendance" element={<Attendance />} />

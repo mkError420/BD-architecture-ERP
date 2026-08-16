@@ -75,12 +75,8 @@ export default function Invoices() {
         if (res.data.pagination) setPagination(res.data.pagination);
       }
     } catch (err) {
-      console.warn('Fallback data for invoices');
-      setInvoices([
-        { id: 1, invoice_no: 'INV-000101', project_name: 'Gulshan Heights Tower', client_name: 'Rahman Real Estate', issue_date: '2025-08-01', due_date: '2025-08-20', total: 4500000, paid_amount: 4500000, status: 'paid' },
-        { id: 2, invoice_no: 'INV-000102', project_name: 'Uttara Commercial Complex', client_name: 'Karim Enterprises', issue_date: '2025-08-10', due_date: '2025-08-30', total: 8500000, paid_amount: 5000000, status: 'partially_paid' },
-        { id: 3, invoice_no: 'INV-000103', project_name: 'Dhanmondi Luxury Duplex', client_name: 'Engr. Hasan Ahmed', issue_date: '2025-08-12', due_date: '2025-09-01', total: 1800000, paid_amount: 0, status: 'sent' },
-      ]);
+      console.error('Failed to load invoices:', err);
+      setInvoices([]);
     } finally {
       setLoading(false);
     }

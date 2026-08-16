@@ -41,7 +41,8 @@ export default function Salary() {
       const res = await employeesAPI.getAll({ per_page: 100 });
       if (res.data.success) setEmployees(res.data.data);
     } catch (e) {
-      console.warn('Employees fallback');
+      console.error('Failed to load employees:', e);
+      setEmployees([]);
     }
   };
 
@@ -50,11 +51,9 @@ export default function Salary() {
     try {
       const res = await salaryAPI.getAll({ month });
       if (res.data.success) setSalaries(res.data.data);
-    } catch {
-      setSalaries([
-        { id: 1, employee_name: 'Md. Rafiqul Islam', employee_code: 'EMP-00101', employee_role: 'supervisor', payment_month: '2025-08', basic_salary: 35000, overtime_pay: 3000, bonus: 2000, deduction: 0, net_salary: 40000, payment_date: '2025-08-01', payment_method: 'bank_transfer', status: 'paid' },
-        { id: 2, employee_name: 'Engr. Shafiul Alam', employee_code: 'EMP-00104', employee_role: 'engineer', payment_month: '2025-08', basic_salary: 55000, overtime_pay: 0, bonus: 0, deduction: 1000, net_salary: 54000, payment_date: '2025-08-01', payment_method: 'bank_transfer', status: 'paid' },
-      ]);
+    } catch (err) {
+      console.error('Failed to load salaries:', err);
+      setSalaries([]);
     } finally {
       setLoading(false);
     }

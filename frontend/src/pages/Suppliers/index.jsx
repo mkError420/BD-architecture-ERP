@@ -40,12 +40,8 @@ export default function Suppliers() {
         setSuppliers(res.data.data);
       }
     } catch (err) {
-      console.warn('Fallback data for suppliers');
-      setSuppliers([
-        { id: 1, name: 'Haji Shamsul Haque', company: 'Shamsul Steel & Rod Agency', phone: '+880 1711-889900', email: 'shamsulsteel@gmail.com', district: 'Dhaka', trade_license: 'TRAD/DNCC/120934/2023', product_categories: 'Rod, Steel, Binding Wire', payment_terms: '30 Days Credit' },
-        { id: 2, name: 'Anwar Traders', company: 'Anwar Cement & Sand Supply', phone: '+880 1812-445566', email: 'anwartraders.bd@yahoo.com', district: 'Gazipur', trade_license: 'TRAD/GCC/098123/2022', product_categories: 'Cement, Sylhet Sand, Stone Chips', payment_terms: 'Cash on Delivery (COD)' },
-        { id: 3, name: 'Bengal Bricks Manufacturing', company: 'Bengal Auto Bricks Ltd.', phone: '+880 1913-778899', email: 'sales@bengalbricks.com', district: 'Narayanganj', trade_license: 'TRAD/NCC/453120/2024', product_categories: '1st Class Bricks, Hollow Blocks', payment_terms: '50% Advance, 50% on Site' },
-      ]);
+      console.error('Failed to load suppliers:', err);
+      setSuppliers([]);
     } finally {
       setLoading(false);
     }
