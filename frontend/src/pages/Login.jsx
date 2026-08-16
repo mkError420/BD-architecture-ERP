@@ -285,6 +285,7 @@ export default function Login() {
               <div className="mt-5 text-center">
                 <p className="text-[11px] text-slate-500">
                   © {new Date().getFullYear()} Buildium-solution Ltd. • All Rights Reserved.
+                  Developed by <a href="https://codexaa.xo.je" className="text-blue-400 hover:text-blue-300 underline underline-offset-2 cursor-pointer transition-colors">Codexxaa-Solutions</a>.
                 </p>
               </div>
 
