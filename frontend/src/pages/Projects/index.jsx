@@ -1,34 +1,65 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { projectsAPI, clientsAPI, usersAPI } from '../../api';
 import DataTable from '../../components/ui/DataTable';
 import Modal from '../../components/ui/Modal';
 import DeleteConfirm from '../../components/ui/DeleteConfirm';
-import { formatCurrency, formatDate, formatStatus, getStatusClass, BD_DIVISIONS, BD_DISTRICTS, PROJECT_TYPES } from '../../utils/helpers';
-import { Plus, Search, Filter, Eye, Edit2, Trash2, Building2, MapPin, Calendar, DollarSign, CheckCircle2 } from 'lucide-react';
+import {
+  formatCurrency,
+  formatDate,
+  formatStatus,
+  getStatusClass,
+  BD_DIVISIONS,
+  BD_DISTRICTS,
+  PROJECT_TYPES,
+  BUILDING_TYPES,
+  STRUCTURAL_SYSTEMS,
+  FOUNDATION_TYPES,
+  FIRE_SAFETY_STATUSES,
+} from '../../utils/helpers';
+import {
+  Plus,
+  Search,
+  Filter,
+  Eye,
+  Edit2,
+  Trash2,
+  Building2,
+  MapPin,
+  Calendar,
+  DollarSign,
+  CheckCircle2,
+  Layers,
+  ChevronRight,
+  Sparkles,
+  ShieldCheck,
+} from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function Projects() {
+  const navigate = useNavigate();
+
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({ page: 1, per_page: 10, total: 0, total_pages: 1 });
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
-  
+
   const [clients, setClients] = useState([]);
   const [users, setUsers] = useState([]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
-  const [formData, setFormData] = useState({
+
+  const initialFormData = {
     name: '',
     description: '',
     client_id: '',
     project_type: 'residential',
     status: 'planning',
-    start_date: '',
+    start_date: new Date().toISOString().split('T')[0],
     end_date: '',
     location: '',
     district: 'Dhaka',
@@ -39,8 +70,32 @@ export default function Projects() {
     approved_budget: '',
     priority: 'medium',
     notes: '',
-    progress: 0
-  });
+    progress: 0,
+    // Building Specs
+    building_type: 'Residential Apartment',
+    stories_above_ground: 1,
+    basement_floors: 0,
+    total_units: 0,
+    gross_floor_area: '',
+    footprint_area: '',
+    far_value: '',
+    mgc_percentage: '',
+    structural_system: 'RCC Frame with Shear Wall Core',
+    foundation_system: 'Cast-in-situ Bored Piles',
+    parking_capacity: 0,
+    rajuk_approval_no: '',
+    approval_date: '',
+    soil_bearing_capacity: '',
+    elevators_count: 0,
+    generator_capacity: '',
+    fire_safety_status: 'Pending Inspection',
+    setback_front: '',
+    setback_rear: '',
+    setback_left: '',
+    setback_right: '',
+  };
+
+  const [formData, setFormData] = useState(initialFormData);
 
   useEffect(() => {
     loadProjects();
@@ -67,10 +122,90 @@ export default function Projects() {
     } catch (err) {
       console.warn('Using demo data fallback for projects');
       setProjects([
-        { id: 1, project_code: 'PRJ-00001', name: 'Gulshan Heights Tower', client_name: 'Rahman Real Estate', project_type: 'commercial', status: 'active', start_date: '2025-01-15', end_date: '2026-06-30', total_budget: 45000000, progress: 65, location: 'Road 11, Gulshan-2', district: 'Dhaka' },
-        { id: 2, project_code: 'PRJ-00002', name: 'Uttara Commercial Complex', client_name: 'Karim Enterprises', project_type: 'commercial', status: 'active', start_date: '2025-03-01', end_date: '2026-12-31', total_budget: 85000000, progress: 40, location: 'Sector 4, Uttara', district: 'Dhaka' },
-        { id: 3, project_code: 'PRJ-00003', name: 'Dhanmondi Luxury Duplex', client_name: 'Engr. Hasan Ahmed', project_type: 'residential', status: 'completed', start_date: '2024-06-01', end_date: '2025-08-01', total_budget: 12000000, progress: 100, location: 'Road 7/A, Dhanmondi', district: 'Dhaka' },
-        { id: 4, project_code: 'PRJ-00004', name: 'Chittagong Port Warehouse', client_name: 'Eastern Logistics', project_type: 'industrial', status: 'planning', start_date: '2025-11-01', end_date: '2026-09-30', total_budget: 35000000, progress: 10, location: 'Agrabad C/A', district: 'Chittagong' },
+        {
+          id: 1,
+          project_code: 'PRJ-00001',
+          name: 'Gulshan Heights Luxury Tower',
+          client_name: 'Rahman Real Estate',
+          project_type: 'residential',
+          building_type: 'Luxury High-Rise Tower',
+          status: 'active',
+          start_date: '2025-01-15',
+          end_date: '2026-08-30',
+          total_budget: 65000000,
+          spent_amount: 38450000,
+          progress: 62,
+          location: 'Road 11, Gulshan-2',
+          district: 'Dhaka',
+          stories_above_ground: 14,
+          basement_floors: 2,
+          total_units: 42,
+          gross_floor_area: 58000,
+          rajuk_approval_no: 'RAJUK/BC-2024/0981',
+        },
+        {
+          id: 2,
+          project_code: 'PRJ-00002',
+          name: 'Uttara Commercial Mega Complex',
+          client_name: 'Karim Enterprises Ltd.',
+          project_type: 'commercial',
+          building_type: 'Commercial Shopping Mall',
+          status: 'active',
+          start_date: '2025-03-01',
+          end_date: '2026-12-31',
+          total_budget: 85000000,
+          spent_amount: 34000000,
+          progress: 40,
+          location: 'Sector 4, Uttara',
+          district: 'Dhaka',
+          stories_above_ground: 12,
+          basement_floors: 3,
+          total_units: 120,
+          gross_floor_area: 95000,
+          rajuk_approval_no: 'RAJUK/ZON-3/2024/1102',
+        },
+        {
+          id: 3,
+          project_code: 'PRJ-00003',
+          name: 'Dhanmondi Luxury Duplex Villa',
+          client_name: 'Engr. Hasan Ahmed',
+          project_type: 'residential',
+          building_type: 'Duplex / Triplex Villa',
+          status: 'completed',
+          start_date: '2024-06-01',
+          end_date: '2025-08-01',
+          total_budget: 15000000,
+          spent_amount: 14800000,
+          progress: 100,
+          location: 'Road 7/A, Dhanmondi',
+          district: 'Dhaka',
+          stories_above_ground: 3,
+          basement_floors: 0,
+          total_units: 2,
+          gross_floor_area: 7200,
+          rajuk_approval_no: 'RAJUK/DHN/2024/045',
+        },
+        {
+          id: 4,
+          project_code: 'PRJ-00004',
+          name: 'Chittagong Port Logistics Terminal',
+          client_name: 'Eastern Logistics BD',
+          project_type: 'industrial',
+          building_type: 'Industrial Factory / Warehouse',
+          status: 'planning',
+          start_date: '2025-11-01',
+          end_date: '2026-09-30',
+          total_budget: 45000000,
+          spent_amount: 4500000,
+          progress: 10,
+          location: 'Agrabad C/A',
+          district: 'Chittagong',
+          stories_above_ground: 4,
+          basement_floors: 0,
+          total_units: 8,
+          gross_floor_area: 36000,
+          rajuk_approval_no: 'CDA/AGR/2025/087',
+        },
       ]);
     } finally {
       setLoading(false);
@@ -81,7 +216,7 @@ export default function Projects() {
     try {
       const [resClients, resUsers] = await Promise.allSettled([
         clientsAPI.getAll({ per_page: 100 }),
-        usersAPI.getAll()
+        usersAPI.getAll(),
       ]);
       if (resClients.status === 'fulfilled' && resClients.value.data.success) {
         setClients(resClients.value.data.data);
@@ -96,31 +231,13 @@ export default function Projects() {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    setPagination(p => ({ ...p, page: 1 }));
+    setPagination((p) => ({ ...p, page: 1 }));
     loadProjects();
   };
 
   const openCreateModal = () => {
     setSelectedProject(null);
-    setFormData({
-      name: '',
-      description: '',
-      client_id: '',
-      project_type: 'residential',
-      status: 'planning',
-      start_date: new Date().toISOString().split('T')[0],
-      end_date: '',
-      location: '',
-      district: 'Dhaka',
-      division: 'Dhaka',
-      total_area: '',
-      area_unit: 'sqft',
-      total_budget: '',
-      approved_budget: '',
-      priority: 'medium',
-      notes: '',
-      progress: 0
-    });
+    setFormData(initialFormData);
     setIsModalOpen(true);
   };
 
@@ -143,14 +260,30 @@ export default function Projects() {
       approved_budget: project.approved_budget || '',
       priority: project.priority || 'medium',
       notes: project.notes || '',
-      progress: project.progress || 0
+      progress: project.progress || 0,
+      building_type: project.building_type || 'Residential Apartment',
+      stories_above_ground: project.stories_above_ground || 1,
+      basement_floors: project.basement_floors || 0,
+      total_units: project.total_units || 0,
+      gross_floor_area: project.gross_floor_area || '',
+      footprint_area: project.footprint_area || '',
+      far_value: project.far_value || '',
+      mgc_percentage: project.mgc_percentage || '',
+      structural_system: project.structural_system || 'RCC Frame with Shear Wall Core',
+      foundation_system: project.foundation_system || 'Cast-in-situ Bored Piles',
+      parking_capacity: project.parking_capacity || 0,
+      rajuk_approval_no: project.rajuk_approval_no || '',
+      approval_date: project.approval_date || '',
+      soil_bearing_capacity: project.soil_bearing_capacity || '',
+      elevators_count: project.elevators_count || 0,
+      generator_capacity: project.generator_capacity || '',
+      fire_safety_status: project.fire_safety_status || 'Pending Inspection',
+      setback_front: project.setback_front || '',
+      setback_rear: project.setback_rear || '',
+      setback_left: project.setback_left || '',
+      setback_right: project.setback_right || '',
     });
     setIsModalOpen(true);
-  };
-
-  const openViewModal = (project) => {
-    setSelectedProject(project);
-    setIsViewModalOpen(true);
   };
 
   const openDeleteModal = (project) => {
@@ -186,36 +319,73 @@ export default function Projects() {
     }
   };
 
+  const handleRowClick = (project) => {
+    navigate(`/projects/${project.id}`);
+  };
+
   const columns = [
     {
       header: 'Code & Project Name',
       render: (row) => (
-        <div>
+        <div
+          onClick={(e) => {
+            e.stopPropagation();
+            navigate(`/projects/${row.id}`);
+          }}
+          className="group cursor-pointer"
+        >
           <div className="flex items-center gap-2">
-            <span className="font-mono text-xs text-primary-600 bg-primary-50 px-1.5 py-0.5 rounded font-semibold">{row.project_code}</span>
-            <span className="font-bold text-gray-900 hover:text-primary-600">{row.name}</span>
+            <span className="font-mono text-xs text-primary-700 bg-primary-50 border border-primary-200/60 px-2 py-0.5 rounded-md font-bold">
+              {row.project_code}
+            </span>
+            <span className="font-bold text-gray-900 group-hover:text-primary-600 transition-colors flex items-center gap-1.5">
+              {row.name}
+              <ChevronRight size={14} className="opacity-0 group-hover:opacity-100 transition-all text-primary-600 -translate-x-1 group-hover:translate-x-0" />
+            </span>
           </div>
-          <div className="flex items-center gap-3 text-xs text-gray-500 mt-1">
-            <span className="flex items-center gap-1"><MapPin size={12} /> {row.district || 'Bangladesh'}</span>
+          <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500 mt-1">
+            <span className="flex items-center gap-1">
+              <MapPin size={12} className="text-gray-400" /> {row.location || row.district || 'Bangladesh'}
+            </span>
             <span>•</span>
-            <span>{row.client_name || 'No Client'}</span>
+            <span className="font-medium text-gray-700">{row.client_name || 'Direct Client'}</span>
           </div>
+        </div>
+      ),
+    },
+    {
+      header: 'Building Specs',
+      render: (row) => (
+        <div className="text-xs">
+          <span className="font-bold text-gray-900 block">
+            {row.stories_above_ground ? `${row.stories_above_ground} Floors (G+${Math.max(0, row.stories_above_ground - 1)})` : '1 Story'}
+            {row.basement_floors > 0 ? ` + ${row.basement_floors}B` : ''}
+          </span>
+          <span className="text-[11px] text-gray-500 block mt-0.5">
+            {row.total_units ? `${row.total_units} Units` : ''}
+            {row.gross_floor_area ? ` • ${row.gross_floor_area} sft` : ''}
+          </span>
         </div>
       ),
     },
     {
       header: 'Type',
       render: (row) => (
-        <span className="capitalize px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700">
-          {row.project_type}
-        </span>
+        <div>
+          <span className="capitalize px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-800 border border-slate-200 inline-block">
+            {row.project_type}
+          </span>
+        </div>
       ),
     },
     {
       header: 'Budget (BDT)',
       render: (row) => (
         <div>
-          <span className="font-semibold text-gray-900">{formatCurrency(row.total_budget)}</span>
+          <span className="font-bold text-gray-900 block text-xs">{formatCurrency(row.total_budget)}</span>
+          {row.spent_amount > 0 && (
+            <span className="text-[10px] text-gray-500 block">Spent: {formatCurrency(row.spent_amount)}</span>
+          )}
         </div>
       ),
     },
@@ -224,12 +394,14 @@ export default function Projects() {
       render: (row) => (
         <div className="w-28">
           <div className="flex justify-between text-xs mb-1">
-            <span className="font-medium text-gray-700">{row.progress}%</span>
+            <span className="font-bold text-gray-800">{row.progress || 0}%</span>
           </div>
           <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
             <div
-              className={`h-full rounded-full ${row.progress >= 100 ? 'bg-emerald-500' : 'bg-primary-600'}`}
-              style={{ width: `${row.progress}%` }}
+              className={`h-full rounded-full transition-all duration-300 ${
+                row.progress >= 100 ? 'bg-emerald-500' : 'bg-primary-600'
+              }`}
+              style={{ width: `${row.progress || 0}%` }}
             />
           </div>
         </div>
@@ -238,18 +410,9 @@ export default function Projects() {
     {
       header: 'Status',
       render: (row) => (
-        <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-semibold ${getStatusClass(row.status)}`}>
+        <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-bold ${getStatusClass(row.status)}`}>
           {formatStatus(row.status)}
         </span>
-      ),
-    },
-    {
-      header: 'Duration',
-      render: (row) => (
-        <div className="text-xs text-gray-600">
-          <div>{formatDate(row.start_date)}</div>
-          <div className="text-gray-400 text-[11px]">to {formatDate(row.end_date)}</div>
-        </div>
       ),
     },
     {
@@ -259,23 +422,23 @@ export default function Projects() {
       render: (row) => (
         <div className="flex items-center justify-end gap-1.5" onClick={(e) => e.stopPropagation()}>
           <button
-            onClick={() => openViewModal(row)}
+            onClick={() => navigate(`/projects/${row.id}`)}
             className="p-1.5 text-gray-500 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
-            title="View Details"
+            title="Open Details & Building Specs"
           >
             <Eye size={16} />
           </button>
           <button
             onClick={() => openEditModal(row)}
             className="p-1.5 text-gray-500 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
-            title="Edit"
+            title="Edit Project"
           >
             <Edit2 size={16} />
           </button>
           <button
             onClick={() => openDeleteModal(row)}
             className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-            title="Delete"
+            title="Delete Project"
           >
             <Trash2 size={16} />
           </button>
@@ -289,21 +452,23 @@ export default function Projects() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Project Management</h1>
-          <p className="text-gray-500 text-sm mt-1">Manage, monitor, and track site operations across Bangladesh</p>
+          <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">Project Management</h1>
+          <p className="text-gray-500 text-sm mt-1">
+            Click on any project to view architectural parameters, floor schedules, work orders & building specifications
+          </p>
         </div>
-        <button onClick={openCreateModal} className="btn-primary">
-          <Plus size={18} /> New Project
+        <button onClick={openCreateModal} className="btn-primary inline-flex items-center gap-2 shadow-sm">
+          <Plus size={18} /> New Construction Project
         </button>
       </div>
 
       {/* Filters & Search */}
-      <div className="bg-white p-4 rounded-2xl border border-gray-200 flex flex-col md:flex-row items-center justify-between gap-3 shadow-sm">
+      <div className="bg-white p-4 rounded-2xl border border-gray-200 flex flex-col md:flex-row items-center justify-between gap-3 shadow-xs">
         <form onSubmit={handleSearch} className="flex-1 w-full md:w-auto relative">
           <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
             type="text"
-            placeholder="Search by project name or code..."
+            placeholder="Search by project name, code or plot location..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="form-input pl-10"
@@ -328,192 +493,283 @@ export default function Projects() {
             className="form-input text-xs w-full md:w-36"
           >
             <option value="">All Types</option>
-            {PROJECT_TYPES.map(t => (
+            {PROJECT_TYPES.map((t) => (
               <option key={t.value} value={t.value}>{t.label}</option>
             ))}
           </select>
         </div>
       </div>
 
-      {/* Data Table */}
-      <DataTable
-        columns={columns}
-        data={projects}
-        loading={loading}
-        pagination={pagination}
-        onPageChange={(page) => setPagination(p => ({ ...p, page }))}
-        onRowClick={openViewModal}
-      />
+      {/* Data Table with Clickable Rows */}
+      <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-xs">
+        <DataTable
+          columns={columns}
+          data={projects}
+          loading={loading}
+          pagination={pagination}
+          onPageChange={(page) => setPagination((p) => ({ ...p, page }))}
+          onRowClick={handleRowClick}
+        />
+      </div>
 
-      {/* Create / Edit Modal */}
+      {/* Create / Edit Project Modal */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title={selectedProject ? 'Edit Project' : 'Create New Project'}
-        size="lg"
+        title={selectedProject ? 'Edit Project & Building Specs' : 'Create New Project'}
+        size="xl"
       >
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="md:col-span-2">
-              <label className="form-label">Project Name *</label>
-              <input
-                type="text"
-                required
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="e.g. Green Valley Luxury Residency"
-                className="form-input"
-              />
-            </div>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Basic Info */}
+          <div className="space-y-3">
+            <h3 className="text-xs font-bold text-gray-900 uppercase tracking-wider border-b border-gray-200 pb-2">
+              1. Project Core Details
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="md:col-span-2">
+                <label className="form-label">Project Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  placeholder="e.g. Green Valley Luxury Residency"
+                  className="form-input"
+                />
+              </div>
 
-            <div>
-              <label className="form-label">Client</label>
-              <select
-                value={formData.client_id}
-                onChange={(e) => setFormData({ ...formData, client_id: e.target.value })}
-                className="form-input"
-              >
-                <option value="">-- Select Client --</option>
-                {clients.map(c => (
-                  <option key={c.id} value={c.id}>{c.name} {c.company ? `(${c.company})` : ''}</option>
-                ))}
-              </select>
-            </div>
+              <div>
+                <label className="form-label">Client</label>
+                <select
+                  value={formData.client_id}
+                  onChange={(e) => setFormData({ ...formData, client_id: e.target.value })}
+                  className="form-input"
+                >
+                  <option value="">-- Select Client --</option>
+                  {clients.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name} {c.company ? `(${c.company})` : ''}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-            <div>
-              <label className="form-label">Project Type</label>
-              <select
-                value={formData.project_type}
-                onChange={(e) => setFormData({ ...formData, project_type: e.target.value })}
-                className="form-input"
-              >
-                {PROJECT_TYPES.map(t => (
-                  <option key={t.value} value={t.value}>{t.label}</option>
-                ))}
-              </select>
-            </div>
+              <div>
+                <label className="form-label">Project Type</label>
+                <select
+                  value={formData.project_type}
+                  onChange={(e) => setFormData({ ...formData, project_type: e.target.value })}
+                  className="form-input"
+                >
+                  {PROJECT_TYPES.map((t) => (
+                    <option key={t.value} value={t.value}>{t.label}</option>
+                  ))}
+                </select>
+              </div>
 
-            <div>
-              <label className="form-label">Total Budget (BDT / ৳)</label>
-              <input
-                type="number"
-                value={formData.total_budget}
-                onChange={(e) => setFormData({ ...formData, total_budget: e.target.value })}
-                placeholder="e.g. 5000000"
-                className="form-input"
-              />
-            </div>
-
-            <div>
-              <label className="form-label">Status</label>
-              <select
-                value={formData.status}
-                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                className="form-input"
-              >
-                <option value="planning">Planning</option>
-                <option value="active">Active</option>
-                <option value="on_hold">On Hold</option>
-                <option value="completed">Completed</option>
-                <option value="cancelled">Cancelled</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="form-label">Start Date</label>
-              <input
-                type="date"
-                value={formData.start_date}
-                onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
-                className="form-input"
-              />
-            </div>
-
-            <div>
-              <label className="form-label">Target Completion Date</label>
-              <input
-                type="date"
-                value={formData.end_date}
-                onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
-                className="form-input"
-              />
-            </div>
-
-            <div>
-              <label className="form-label">Division</label>
-              <select
-                value={formData.division}
-                onChange={(e) => setFormData({ ...formData, division: e.target.value })}
-                className="form-input"
-              >
-                {BD_DIVISIONS.map(d => (
-                  <option key={d} value={d}>{d}</option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="form-label">District</label>
-              <select
-                value={formData.district}
-                onChange={(e) => setFormData({ ...formData, district: e.target.value })}
-                className="form-input"
-              >
-                {BD_DISTRICTS.map(d => (
-                  <option key={d} value={d}>{d}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="md:col-span-2">
-              <label className="form-label">Site Address / Specific Location</label>
-              <input
-                type="text"
-                value={formData.location}
-                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                placeholder="Plot #, Road #, Sector/Area, Thana"
-                className="form-input"
-              />
-            </div>
-
-            <div>
-              <label className="form-label">Total Land/Floor Area</label>
-              <div className="flex gap-2">
+              <div>
+                <label className="form-label">Total Budget (BDT / ৳)</label>
                 <input
                   type="number"
-                  value={formData.total_area}
-                  onChange={(e) => setFormData({ ...formData, total_area: e.target.value })}
-                  placeholder="e.g. 3500"
-                  className="form-input flex-1"
+                  value={formData.total_budget}
+                  onChange={(e) => setFormData({ ...formData, total_budget: e.target.value })}
+                  placeholder="e.g. 50000000"
+                  className="form-input"
                 />
+              </div>
+
+              <div>
+                <label className="form-label">Status</label>
                 <select
-                  value={formData.area_unit}
-                  onChange={(e) => setFormData({ ...formData, area_unit: e.target.value })}
-                  className="form-input w-28"
+                  value={formData.status}
+                  onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                  className="form-input"
                 >
-                  <option value="sqft">Sq. Ft.</option>
-                  <option value="katha">Katha</option>
-                  <option value="bigha">Bigha</option>
-                  <option value="decimal">Decimal</option>
+                  <option value="planning">Planning</option>
+                  <option value="active">Active</option>
+                  <option value="on_hold">On Hold</option>
+                  <option value="completed">Completed</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="form-label">Start Date</label>
+                <input
+                  type="date"
+                  value={formData.start_date}
+                  onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
+                  className="form-input"
+                />
+              </div>
+
+              <div>
+                <label className="form-label">Target Completion Date</label>
+                <input
+                  type="date"
+                  value={formData.end_date}
+                  onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
+                  className="form-input"
+                />
+              </div>
+
+              <div>
+                <label className="form-label">Division</label>
+                <select
+                  value={formData.division}
+                  onChange={(e) => setFormData({ ...formData, division: e.target.value })}
+                  className="form-input"
+                >
+                  {BD_DIVISIONS.map((d) => (
+                    <option key={d} value={d}>{d}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="form-label">District</label>
+                <select
+                  value={formData.district}
+                  onChange={(e) => setFormData({ ...formData, district: e.target.value })}
+                  className="form-input"
+                >
+                  {BD_DISTRICTS.map((d) => (
+                    <option key={d} value={d}>{d}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="md:col-span-2">
+                <label className="form-label">Site Address / Plot Location</label>
+                <input
+                  type="text"
+                  value={formData.location}
+                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                  placeholder="Plot #, Road #, Sector, Thana"
+                  className="form-input"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Building Specifications */}
+          <div className="space-y-3">
+            <h3 className="text-xs font-bold text-primary-700 uppercase tracking-wider border-b border-gray-200 pb-2">
+              2. Building & Structural Specifications
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="form-label">Building Typology</label>
+                <select
+                  value={formData.building_type}
+                  onChange={(e) => setFormData({ ...formData, building_type: e.target.value })}
+                  className="form-input"
+                >
+                  {BUILDING_TYPES.map((bt) => (
+                    <option key={bt} value={bt}>{bt}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="form-label">Stories Above Ground</label>
+                <input
+                  type="number"
+                  min="1"
+                  value={formData.stories_above_ground}
+                  onChange={(e) => setFormData({ ...formData, stories_above_ground: e.target.value })}
+                  className="form-input"
+                  placeholder="e.g. 14"
+                />
+              </div>
+
+              <div>
+                <label className="form-label">Basement Floors</label>
+                <input
+                  type="number"
+                  min="0"
+                  value={formData.basement_floors}
+                  onChange={(e) => setFormData({ ...formData, basement_floors: e.target.value })}
+                  className="form-input"
+                  placeholder="e.g. 2"
+                />
+              </div>
+
+              <div>
+                <label className="form-label">Total Units / Flats</label>
+                <input
+                  type="number"
+                  min="0"
+                  value={formData.total_units}
+                  onChange={(e) => setFormData({ ...formData, total_units: e.target.value })}
+                  className="form-input"
+                  placeholder="e.g. 36"
+                />
+              </div>
+
+              <div>
+                <label className="form-label">Gross Floor Area (GFA sqft)</label>
+                <input
+                  type="number"
+                  value={formData.gross_floor_area}
+                  onChange={(e) => setFormData({ ...formData, gross_floor_area: e.target.value })}
+                  className="form-input"
+                  placeholder="e.g. 52000"
+                />
+              </div>
+
+              <div>
+                <label className="form-label">RAJUK / CDA Approval No</label>
+                <input
+                  type="text"
+                  value={formData.rajuk_approval_no}
+                  onChange={(e) => setFormData({ ...formData, rajuk_approval_no: e.target.value })}
+                  className="form-input"
+                  placeholder="e.g. RAJUK/BC-2024/0981"
+                />
+              </div>
+
+              <div>
+                <label className="form-label">Structural Frame</label>
+                <select
+                  value={formData.structural_system}
+                  onChange={(e) => setFormData({ ...formData, structural_system: e.target.value })}
+                  className="form-input"
+                >
+                  {STRUCTURAL_SYSTEMS.map((s) => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="form-label">Foundation Substructure</label>
+                <select
+                  value={formData.foundation_system}
+                  onChange={(e) => setFormData({ ...formData, foundation_system: e.target.value })}
+                  className="form-input"
+                >
+                  {FOUNDATION_TYPES.map((f) => (
+                    <option key={f} value={f}>{f}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="form-label">Fire Safety Status</label>
+                <select
+                  value={formData.fire_safety_status}
+                  onChange={(e) => setFormData({ ...formData, fire_safety_status: e.target.value })}
+                  className="form-input"
+                >
+                  {FIRE_SAFETY_STATUSES.map((fs) => (
+                    <option key={fs} value={fs}>{fs}</option>
+                  ))}
                 </select>
               </div>
             </div>
 
-            {selectedProject && (
-              <div>
-                <label className="form-label">Completion Progress (%)</label>
-                <input
-                  type="number"
-                  min="0"
-                  max="100"
-                  value={formData.progress}
-                  onChange={(e) => setFormData({ ...formData, progress: e.target.value })}
-                  className="form-input"
-                />
-              </div>
-            )}
-
-            <div className="md:col-span-2">
+            <div className="md:col-span-3">
               <label className="form-label">Project Description & Scope</label>
               <textarea
                 rows="3"
@@ -534,75 +790,6 @@ export default function Projects() {
             </button>
           </div>
         </form>
-      </Modal>
-
-      {/* View Details Modal */}
-      <Modal
-        isOpen={isViewModalOpen}
-        onClose={() => setIsViewModalOpen(false)}
-        title="Project Overview & Details"
-        size="lg"
-      >
-        {selectedProject && (
-          <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-4 bg-gradient-to-r from-primary-900 to-primary-800 text-white rounded-2xl">
-              <div>
-                <span className="text-xs font-mono uppercase bg-primary-700/50 px-2 py-0.5 rounded text-primary-200">
-                  {selectedProject.project_code}
-                </span>
-                <h2 className="text-xl font-bold mt-1">{selectedProject.name}</h2>
-                <p className="text-sm text-primary-200 mt-0.5 flex items-center gap-1.5">
-                  <MapPin size={14} /> {selectedProject.location || selectedProject.district || 'Dhaka, Bangladesh'}
-                </p>
-              </div>
-              <span className={`px-3 py-1 rounded-full text-xs font-bold ${getStatusClass(selectedProject.status)}`}>
-                {formatStatus(selectedProject.status)}
-              </span>
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              <div className="p-3 bg-gray-50 rounded-xl border border-gray-100">
-                <span className="text-xs text-gray-500">Total Budget</span>
-                <p className="text-base font-bold text-gray-900 mt-0.5">{formatCurrency(selectedProject.total_budget)}</p>
-              </div>
-              <div className="p-3 bg-gray-50 rounded-xl border border-gray-100">
-                <span className="text-xs text-gray-500">Progress</span>
-                <p className="text-base font-bold text-primary-600 mt-0.5">{selectedProject.progress || 0}%</p>
-              </div>
-              <div className="p-3 bg-gray-50 rounded-xl border border-gray-100">
-                <span className="text-xs text-gray-500">Start Date</span>
-                <p className="text-sm font-semibold text-gray-800 mt-0.5">{formatDate(selectedProject.start_date)}</p>
-              </div>
-              <div className="p-3 bg-gray-50 rounded-xl border border-gray-100">
-                <span className="text-xs text-gray-500">Target End</span>
-                <p className="text-sm font-semibold text-gray-800 mt-0.5">{formatDate(selectedProject.end_date)}</p>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <h3 className="font-semibold text-gray-900 text-sm">Site & Structural Specifications</h3>
-              <div className="bg-white border border-gray-200 rounded-xl p-4 text-sm text-gray-700 space-y-2">
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div><span className="text-gray-500">Client:</span> <span className="font-medium text-gray-800">{selectedProject.client_name || 'N/A'}</span></div>
-                  <div><span className="text-gray-500">Area:</span> <span className="font-medium text-gray-800">{selectedProject.total_area ? `${selectedProject.total_area} ${selectedProject.area_unit}` : 'N/A'}</span></div>
-                  <div><span className="text-gray-500">Division/District:</span> <span className="font-medium text-gray-800">{selectedProject.district}, {selectedProject.division}</span></div>
-                  <div><span className="text-gray-500">Project Type:</span> <span className="font-medium text-gray-800 capitalize">{selectedProject.project_type}</span></div>
-                </div>
-                {selectedProject.description && (
-                  <p className="text-gray-600 text-xs border-t border-gray-100 pt-2 mt-2">
-                    {selectedProject.description}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-3 pt-2">
-              <button onClick={() => setIsViewModalOpen(false)} className="btn-secondary">
-                Close
-              </button>
-            </div>
-          </div>
-        )}
       </Modal>
 
       {/* Delete Confirmation */}

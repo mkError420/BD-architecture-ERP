@@ -123,3 +123,50 @@ export const PAYMENT_METHODS = [
   { value: 'cheque', label: 'Cheque' },
   { value: 'mobile_banking', label: 'Mobile Banking (bKash/Nagad)' },
 ];
+
+// Building Types
+export const BUILDING_TYPES = [
+  'Residential Apartment',
+  'Commercial Complex',
+  'Mixed-Use Tower',
+  'Corporate Office Building',
+  'Industrial Factory / Warehouse',
+  'Duplex / Triplex Villa',
+  'Hospital / Healthcare Facility',
+  'Educational Institution',
+  'Hotel & Resort',
+  'Shopping Mall & Cineplex',
+  'Infrastructure Project',
+];
+
+// Structural Systems
+export const STRUCTURAL_SYSTEMS = [
+  'RCC Frame with Shear Wall Core',
+  'RCC Beam-Column Frame',
+  'Post-Tensioned (PT) Flat Slabs',
+  'Structural Steel Frame',
+  'Precast Concrete Panel System',
+  'Composite Steel-Concrete',
+  'Load Bearing Masonry',
+];
+
+// Foundation Types
+export const FOUNDATION_TYPES = [
+  'Cast-in-situ Bored Piles',
+  'Precast Driven RCC Piles',
+  'Mat / Raft Foundation',
+  'Combined Footing',
+  'Isolated Pad Footings',
+  'Micropiles / Soil Nailing',
+  'Under-reamed Piles',
+];
+
+// Fire Safety Statuses
+export const FIRE_SAFETY_STATUSES = [
+  'Pending Inspection',
+  'FSCD Approved & Certified',
+  'Hydrant & Sprinkler Installed',
+  'Under Design Review',
+  'Exempt / Non-Applicable',
+];
+

@@ -6,6 +6,7 @@ import Layout from './components/layout/Layout';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Projects from './pages/Projects';
+import ProjectDetails from './pages/Projects/ProjectDetails';
 import Clients from './pages/Clients';
 import Employees from './pages/Employees';
 import Attendance from './pages/Attendance';
@@ -61,6 +62,7 @@ export default function App() {
           >
             <Route index element={<Dashboard />} />
             <Route path="projects" element={<Projects />} />
+            <Route path="projects/:id" element={<ProjectDetails />} />
             <Route path="clients" element={<Clients />} />
             <Route path="employees" element={<Employees />} />
             <Route path="attendance" element={<Attendance />} />
