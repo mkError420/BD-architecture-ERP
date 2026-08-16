@@ -1,6 +1,10 @@
 <?php
-$user = requireAuth();
-$db = Database::getInstance()->getConnection();
+try {
+    $user = requireAuth();
+    $db = Database::getInstance()->getConnection();
+} catch (Exception $e) {
+    sendError('Database connection failed: ' . $e->getMessage(), 500);
+}
 
 // Function to dynamically ensure building columns exist without breaking live installations
 function ensureBuildingColumns($db) {

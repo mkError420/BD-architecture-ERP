@@ -1,6 +1,10 @@
 <?php
-$user = requireAuth();
-$db = Database::getInstance()->getConnection();
+try {
+    $user = requireAuth();
+    $db = Database::getInstance()->getConnection();
+} catch (Exception $e) {
+    sendError('Database connection failed: ' . $e->getMessage(), 500);
+}
 
 switch ($method) {
     case 'GET':

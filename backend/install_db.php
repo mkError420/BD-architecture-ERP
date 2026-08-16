@@ -17,11 +17,11 @@ if (file_exists($envFile)) {
     }
 }
 
-$host = $_ENV['DB_HOST'] ?? 'sql107.infinityfree.com';
+$host = $_ENV['DB_HOST'] ?? 'localhost';
 $port = $_ENV['DB_PORT'] ?? '3306';
-$dbname = $_ENV['DB_NAME'] ?? 'if0_42333746_mk_pos';
-$user = $_ENV['DB_USER'] ?? 'if0_42333746';
-$pass = $_ENV['DB_PASS'] ?? 'VHxnlDleyPf09';
+$dbname = $_ENV['DB_NAME'] ?? 'construction_db';
+$user = $_ENV['DB_USER'] ?? 'root';
+$pass = $_ENV['DB_PASS'] ?? '';
 
 echo "<h2>🏗️ Construction Management System — Database Installer</h2>";
 echo "<p>Connecting to MySQL database <strong>$dbname</strong> on host <strong>$host</strong>...</p>";
