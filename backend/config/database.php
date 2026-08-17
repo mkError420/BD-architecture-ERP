@@ -32,16 +32,19 @@ class Database {
                     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                     PDO::ATTR_EMULATE_PREPARES => false,
+                    PDO::ATTR_TIMEOUT => 5,
                 ]
             );
         } catch (PDOException $e) {
-            http_response_code(500);
+            error_log("Database connection failed: " . $e->getMessage());
+            http_response_code(503);
             echo json_encode([
                 'success' => false,
-                'message' => 'Database connection failed',
+                'message' => 'Database connection failed. Please check your database configuration.',
                 'error' => $e->getMessage(),
                 'host' => $host,
-                'database' => $dbname
+                'database' => $dbname,
+                'suggestion' => 'Ensure MySQL server is running and credentials are correct in .env file'
             ]);
             exit;
         }

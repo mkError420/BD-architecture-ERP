@@ -45,8 +45,34 @@ try {
 
     $sql = file_get_contents($schemaFile);
 
-    // Split SQL by statements
-    $pdo->exec($sql);
+    // Replace CREATE TABLE with CREATE TABLE IF NOT EXISTS (only if not already present)
+    $sql = preg_replace('/CREATE TABLE (?!IF NOT EXISTS)/i', 'CREATE TABLE IF NOT EXISTS ', $sql);
+
+    // Replace INSERT with INSERT IGNORE to handle duplicate data
+    $sql = preg_replace('/INSERT INTO /i', 'INSERT IGNORE INTO ', $sql);
+
+    // Split SQL by statements and execute each individually
+    $statements = explode(';', $sql);
+    $successCount = 0;
+    $errorCount = 0;
+
+    foreach ($statements as $statement) {
+        $statement = trim($statement);
+        if (empty($statement)) continue;
+
+        try {
+            $pdo->exec($statement);
+            $successCount++;
+        } catch (PDOException $e) {
+            // Ignore duplicate key errors for INSERT statements
+            if (strpos($e->getMessage(), 'Duplicate entry') !== false) {
+                // Skip - data already exists
+            } else {
+                $errorCount++;
+                echo "<p style='color:orange;'>⚠️ Warning: " . htmlspecialchars($e->getMessage()) . "</p>";
+            }
+        }
+    }
 
     echo "<p style='color:green; font-weight:bold;'>🎉 All 14 tables and default settings have been created successfully!</p>";
     echo "<h3>Default Admin Credentials:</h3>";

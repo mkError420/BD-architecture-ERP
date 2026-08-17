@@ -1,6 +1,17 @@
 <?php
 header('Content-Type: application/json; charset=utf-8');
 
+// CORS configuration for production
+$allowedOrigins = ['https://mkposs.gt.tc', 'http://localhost:5173', 'http://localhost:3000'];
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+
+if (in_array($origin, $allowedOrigins)) {
+    header('Access-Control-Allow-Origin: ' . $origin);
+}
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, Authorization');
+header('Access-Control-Allow-Credentials: true');
+
 // Handle CORS preflight
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
@@ -76,6 +87,33 @@ switch ($module) {
         break;
     case 'settings':
         require __DIR__ . '/api/settings/index.php';
+        break;
+    case 'project-payments':
+        require __DIR__ . '/api/project-payments/index.php';
+        break;
+    case 'security-deposits':
+        require __DIR__ . '/api/security-deposits/index.php';
+        break;
+    case 'boq':
+        require __DIR__ . '/api/boq/index.php';
+        break;
+    case 'project-schedule':
+        require __DIR__ . '/api/project-schedule/index.php';
+        break;
+    case 'purchases':
+        require __DIR__ . '/api/purchases/index.php';
+        break;
+    case 'stock':
+        require __DIR__ . '/api/stock/index.php';
+        break;
+    case 'labour-wages':
+        require __DIR__ . '/api/labour-wages/index.php';
+        break;
+    case 'tools':
+        require __DIR__ . '/api/tools/index.php';
+        break;
+    case 'vehicles':
+        require __DIR__ . '/api/vehicles/index.php';
         break;
     default:
         sendError('Endpoint not found', 404);
