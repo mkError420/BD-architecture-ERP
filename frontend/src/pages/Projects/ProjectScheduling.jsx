@@ -63,14 +63,23 @@ export default function ProjectScheduling() {
         projectScheduleAPI.getAll({ project_id: projectId }),
         projectsAPI.getOne(projectId),
       ]);
-      if (taskRes.status === 'fulfilled' && taskRes.value.data.success) {
-        setTasks(taskRes.value.data.data || []);
-        setIsDemo(false);
+      if (taskRes.status === 'fulfilled' && taskRes.value?.data) {
+        const raw = taskRes.value.data;
+        const taskList = Array.isArray(raw.data) ? raw.data : (Array.isArray(raw.data?.data) ? raw.data.data : (Array.isArray(raw) ? raw : null));
+        if (taskList !== null) {
+          setTasks(taskList);
+          setIsDemo(false);
+        } else {
+          setTasks(DEMO_TASKS);
+          setIsDemo(true);
+        }
       } else {
         setTasks(DEMO_TASKS);
         setIsDemo(true);
       }
-      if (projRes.status === 'fulfilled' && projRes.value.data.success) setProject(projRes.value.data.data);
+      if (projRes.status === 'fulfilled' && projRes.value?.data) {
+        setProject(projRes.value.data.data || projRes.value.data);
+      }
     } catch {
       setTasks(DEMO_TASKS);
       setIsDemo(true);
@@ -83,11 +92,17 @@ export default function ProjectScheduling() {
     e.preventDefault();
     setSubmitting(true);
     try {
+      const payload = {
+        ...formData,
+        project_id: projectId,
+        progress: parseInt(formData.progress) || 0,
+        end_date: formData.end_date || formData.start_date,
+      };
       if (selectedTask) {
-        await projectScheduleAPI.update(selectedTask.id, formData);
+        await projectScheduleAPI.update(selectedTask.id, payload);
         toast.success('Task updated!');
       } else {
-        await projectScheduleAPI.create(formData);
+        await projectScheduleAPI.create(payload);
         toast.success('Task added to schedule!');
       }
       setIsModalOpen(false);
@@ -125,9 +140,10 @@ export default function ProjectScheduling() {
     setIsModalOpen(true);
   };
 
-  const filteredTasks = filterStatus === 'all' ? tasks : tasks.filter((t) => t.status === filterStatus);
-  const completedCount = tasks.filter((t) => t.status === 'completed').length;
-  const avgProgress = tasks.length > 0 ? Math.round(tasks.reduce((s, t) => s + (t.progress || 0), 0) / tasks.length) : 0;
+  const safeTasks = Array.isArray(tasks) ? tasks : [];
+  const filteredTasks = filterStatus === 'all' ? safeTasks : safeTasks.filter((t) => t.status === filterStatus);
+  const completedCount = safeTasks.filter((t) => t.status === 'completed').length;
+  const avgProgress = safeTasks.length > 0 ? Math.round(safeTasks.reduce((s, t) => s + (parseInt(t.progress) || 0), 0) / safeTasks.length) : 0;
 
   return (
     <div className="space-y-6">

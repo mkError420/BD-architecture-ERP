@@ -189,7 +189,7 @@ export default function ProjectInfo() {
       <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
         <h2 className="text-base font-bold text-gray-900 mb-4">Project Overview Sections</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-          <Link to={`/projects/${projectId}/payments`} className="flex items-center gap-2 p-3 rounded-lg border border-gray-100 hover:border-blue-200 hover:bg-blue-50/50 transition-colors text-xs font-medium text-gray-700">
+          <Link to={`/projects/${projectId}/payments/history`} className="flex items-center gap-2 p-3 rounded-lg border border-gray-100 hover:border-blue-200 hover:bg-blue-50/50 transition-colors text-xs font-medium text-gray-700">
             <DollarSign size={16} className="text-emerald-600" /> Client Payments
           </Link>
           <Link to={`/projects/${projectId}/security-deposits`} className="flex items-center gap-2 p-3 rounded-lg border border-gray-100 hover:border-blue-200 hover:bg-blue-50/50 transition-colors text-xs font-medium text-gray-700">

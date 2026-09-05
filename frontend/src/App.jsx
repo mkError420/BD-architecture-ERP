@@ -79,6 +79,7 @@ export default function App() {
             
             {/* Project sub-routes */}
             <Route path="projects/:projectId/info" element={<ProjectInfo />} />
+            <Route path="projects/:projectId/payments" element={<Navigate to="history" replace />} />
             <Route path="projects/:projectId/payments/history" element={<ClientPayments />} />
             <Route path="projects/:projectId/payments/plans" element={<ClientPayments />} />
             <Route path="projects/:projectId/payments/invoices" element={<ClientPayments />} />

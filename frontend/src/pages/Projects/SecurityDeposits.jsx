@@ -64,15 +64,27 @@ export default function SecurityDeposits() {
         projectsAPI.getOne(projectId),
         clientsAPI.getAll({ per_page: 100 }),
       ]);
-      if (depRes.status === 'fulfilled' && depRes.value.data.success) {
-        setDeposits(depRes.value.data.data || []);
-        setIsDemo(false);
+      if (depRes.status === 'fulfilled' && depRes.value?.data) {
+        const d = depRes.value.data;
+        const list = Array.isArray(d.data) ? d.data : (Array.isArray(d) ? d : null);
+        if (list !== null) {
+          setDeposits(list);
+          setIsDemo(false);
+        } else {
+          setDeposits(DEMO_DEPOSITS);
+          setIsDemo(true);
+        }
       } else {
         setDeposits(DEMO_DEPOSITS);
         setIsDemo(true);
       }
-      if (projRes.status === 'fulfilled' && projRes.value.data.success) setProject(projRes.value.data.data);
-      if (clientRes.status === 'fulfilled' && clientRes.value.data.success) setClients(clientRes.value.data.data || []);
+      if (projRes.status === 'fulfilled' && projRes.value?.data) {
+        setProject(projRes.value.data.data || projRes.value.data);
+      }
+      if (clientRes.status === 'fulfilled' && clientRes.value?.data) {
+        const cData = clientRes.value.data;
+        setClients(Array.isArray(cData.data) ? cData.data : (Array.isArray(cData) ? cData : []));
+      }
     } catch {
       setDeposits(DEMO_DEPOSITS);
       setIsDemo(true);
@@ -85,11 +97,18 @@ export default function SecurityDeposits() {
     e.preventDefault();
     setSubmitting(true);
     try {
+      const payload = {
+        ...formData,
+        project_id: projectId,
+        client_id: formData.client_id ? Number(formData.client_id) : null,
+        amount: parseFloat(formData.amount) || 0,
+        refund_amount: formData.refund_amount ? parseFloat(formData.refund_amount) : 0,
+      };
       if (selectedDeposit) {
-        await securityDepositsAPI.update(selectedDeposit.id, formData);
+        await securityDepositsAPI.update(selectedDeposit.id, payload);
         toast.success('Deposit updated!');
       } else {
-        await securityDepositsAPI.create(formData);
+        await securityDepositsAPI.create(payload);
         toast.success('Security deposit recorded!');
       }
       setIsModalOpen(false);

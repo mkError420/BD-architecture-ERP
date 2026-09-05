@@ -160,6 +160,15 @@ export const projectPaymentsAPI = {
   delete: (id) => api.delete(`/project-payments/${id}`),
 };
 
+// Payment Plans / Milestones
+export const paymentPlansAPI = {
+  getAll: (params) => api.get('/project-payments', { params: { ...params, type: 'plans' } }),
+  getOne: (id) => api.get(`/project-payments/${id}?type=plans`),
+  create: (data) => api.post('/project-payments?type=plans', data),
+  update: (id, data) => api.put(`/project-payments/${id}?type=plans`, data),
+  delete: (id) => api.delete(`/project-payments/${id}?type=plans`),
+};
+
 // Security Deposits
 export const securityDepositsAPI = {
   getAll: (params) => api.get('/security-deposits', { params }),
