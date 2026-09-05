@@ -90,7 +90,7 @@ export default function Login() {
             {/* Headline */}
             <h1 className="text-3xl sm:text-4xl xl:text-5xl font-black text-white leading-[1.2] tracking-tight">
               Streamline Construction Projects from{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-sky-300 to-amber-400">
+              <span className="text-gray-500">
                 Piling to Handover
               </span>
             </h1>
@@ -103,28 +103,28 @@ export default function Login() {
 
             {/* Feature Highlights Grid */}
             <div className="grid grid-cols-2 gap-3.5 mt-7 max-w-xl">
-              <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-slate-900/70 border border-slate-800/80 backdrop-blur-xs">
+              <div className="flex items-center gap-3 p-3.5 rounded-1xl bg-slate-900/70 border border-slate-800/80 backdrop-blur-xs">
                 <div className="min-w-0">
                   <p className="text-xs font-bold text-slate-200 truncate">Daily Site Labor</p>
                   <p className="text-[11px] text-slate-400 truncate">Muster roll & wages</p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-slate-900/70 border border-slate-800/80 backdrop-blur-xs">
+              <div className="flex items-center gap-3 p-3.5 rounded-1xl bg-slate-900/70 border border-slate-800/80 backdrop-blur-xs">
                 <div className="min-w-0">
                   <p className="text-xs font-bold text-slate-200 truncate">BDT Budget & BOQ</p>
                   <p className="text-[11px] text-slate-400 truncate">Real-time cost tracking</p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-slate-900/70 border border-slate-800/80 backdrop-blur-xs">
+              <div className="flex items-center gap-3 p-3.5 rounded-1xl bg-slate-900/70 border border-slate-800/80 backdrop-blur-xs">
                 <div className="min-w-0">
                   <p className="text-xs font-bold text-slate-200 truncate">RAJUK Compliance</p>
                   <p className="text-[11px] text-slate-400 truncate">Permits & approvals</p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 p-3.5 rounded-2xl bg-slate-900/70 border border-slate-800/80 backdrop-blur-xs">
+              <div className="flex items-center gap-3 p-3.5 rounded-1xl bg-slate-900/70 border border-slate-800/80 backdrop-blur-xs">
                 <div className="min-w-0">
                   <p className="text-xs font-bold text-slate-200 truncate">Vendor Invoicing</p>
                   <p className="text-[11px] text-slate-400 truncate">VAT & NBR ready</p>
@@ -161,9 +161,6 @@ export default function Login() {
                 <h2 className="text-2xl font-black text-white tracking-tight flex items-center gap-2">
                   Sign In
                 </h2>
-                <p className="text-slate-400 text-xs sm:text-sm mt-1">
-                  Access your enterprise construction management dashboard
-                </p>
               </div>
 
               {/* Form Body */}
@@ -192,9 +189,6 @@ export default function Login() {
                     <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider">
                       Password
                     </label>
-                    <span className="text-xs text-blue-400 hover:text-blue-300 cursor-pointer font-medium">
-                      Forgot?
-                    </span>
                   </div>
                   <div className="relative">
                     <div className="absolute left-3.5 top-0 bottom-0 flex items-center pointer-events-none text-slate-400">
@@ -229,9 +223,6 @@ export default function Login() {
                     />
                     <span className="text-xs text-slate-300 font-medium">Keep me signed in</span>
                   </label>
-                  <span className="text-[11px] text-emerald-400 flex items-center gap-1 font-medium">
-                    <CheckCircle2 size={13} /> SSL Secured
-                  </span>
                 </div>
 
                 <button
@@ -243,7 +234,7 @@ export default function Login() {
                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   ) : (
                     <>
-                      <LogIn size={18} /> Sign In to Dashboard <ArrowRight size={16} className="ml-0.5 opacity-80" />
+                      <LogIn size={18} /> Sign In
                     </>
                   )}
                 </button>

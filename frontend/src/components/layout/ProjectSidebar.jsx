@@ -14,6 +14,7 @@ import {
   Truck,
   ChevronDown,
   ChevronRight,
+  ChevronLeft,
   X,
 } from 'lucide-react';
 
@@ -111,7 +112,7 @@ const projectMenuItems = [
   },
 ];
 
-export default function ProjectSidebar({ isOpen, onClose, projectId }) {
+export default function ProjectSidebar({ isOpen, onClose, onToggle, projectId }) {
   const location = useLocation();
   const [expandedMenus, setExpandedMenus] = useState({});
 
@@ -149,15 +150,14 @@ export default function ProjectSidebar({ isOpen, onClose, projectId }) {
       {/* Sidebar */}
       <aside
         className={`
-          fixed lg:static inset-y-0 left-0 z-50
-          ${isOpen ? 'w-72' : 'w-0 lg:w-72'}
-          ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-          bg-white border-r border-gray-200 sidebar-transition flex flex-col shadow-xl lg:shadow-none
-          overflow-hidden
+          fixed lg:static inset-y-0 left-0 z-30
+          ${isOpen ? 'w-72 translate-x-0' : 'w-0 -translate-x-full lg:translate-x-0 lg:w-0 border-r-0 pointer-events-none'}
+          bg-white border-r border-gray-200 transition-all duration-300 flex flex-col shadow-xl lg:shadow-none
+          overflow-hidden whitespace-nowrap
         `}
       >
         {/* Header */}
-        <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200 bg-gray-50">
+        <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200 bg-gray-50 flex-shrink-0">
           <div className="flex items-center gap-2 overflow-hidden">
             <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: 'linear-gradient(to bottom right, #A0975A, #8a824a)' }}>
               <FileText size={18} className="text-white" />
@@ -166,9 +166,11 @@ export default function ProjectSidebar({ isOpen, onClose, projectId }) {
           </div>
           <button
             onClick={onClose}
-            className="lg:hidden p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+            className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+            title="Collapse Project Overview"
           >
-            <X size={18} />
+            <ChevronLeft size={18} className="hidden lg:block" />
+            <X size={18} className="lg:hidden" />
           </button>
         </div>
 
@@ -245,10 +247,18 @@ export default function ProjectSidebar({ isOpen, onClose, projectId }) {
         </nav>
 
         {/* Footer */}
-        <div className="p-3 border-t border-gray-200 bg-gray-50">
-          <div className="text-[10px] text-gray-500 text-center">
-            Project ID: {projectId}
+        <div className="p-3 border-t border-gray-200 bg-gray-50 flex items-center justify-between flex-shrink-0">
+          <div className="text-[11px] font-medium text-gray-500 truncate">
+            Project ID: <span className="font-bold text-gray-700">#{projectId}</span>
           </div>
+          <button
+            onClick={onClose}
+            className="hidden lg:flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] text-gray-500 hover:text-gray-800 hover:bg-gray-200/70 transition-colors font-semibold"
+            title="Collapse Project Overview"
+          >
+            <ChevronLeft size={14} />
+            <span>Collapse</span>
+          </button>
         </div>
       </aside>
     </>

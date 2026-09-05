@@ -1,9 +1,15 @@
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { Menu, Bell, Search, LogOut, User, ChevronDown, Building2 } from 'lucide-react';
+import { Menu, Bell, Search, LogOut, User, ChevronDown, Building2, FileText } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 
-export default function Header({ onMenuClick }) {
+export default function Header({
+  onMenuClick,
+  sidebarOpen,
+  isProjectPage,
+  projectSidebarOpen,
+  onToggleProjectSidebar,
+}) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -52,6 +58,27 @@ export default function Header({ onMenuClick }) {
           </div>
           <span className="font-extrabold text-slate-900 text-sm hidden sm:inline">Buildium-solution</span>
         </div>
+
+        {/* Project Overview Sidebar Toggle when on a project page */}
+        {isProjectPage && (
+          <button
+            onClick={onToggleProjectSidebar}
+            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-bold border transition-all ${
+              projectSidebarOpen
+                ? 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 hover:border-slate-300'
+                : 'bg-primary-50 text-primary-800 border-primary-300 hover:bg-primary-100 shadow-xs'
+            }`}
+            title={projectSidebarOpen ? "Collapse Project Overview Sidebar" : "Open Project Overview Sidebar"}
+          >
+            <FileText size={15} className="text-primary-700 flex-shrink-0" />
+            <span className="hidden sm:inline">Project Overview</span>
+            <span className={`text-[10px] px-1.5 py-0.2 rounded font-semibold ${
+              projectSidebarOpen ? 'bg-slate-200 text-slate-700' : 'bg-primary-200/80 text-primary-900'
+            }`}>
+              {projectSidebarOpen ? 'Collapse' : 'Expand'}
+            </span>
+          </button>
+        )}
 
         {/* Global Search Bar */}
         <div className={`${searchOpen ? 'flex absolute inset-x-2 top-2 z-30 bg-white p-2 rounded-2xl shadow-lg border border-slate-200' : 'hidden md:flex'} items-center relative flex-1 max-w-md`}>

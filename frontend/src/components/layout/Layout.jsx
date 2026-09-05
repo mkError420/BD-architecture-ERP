@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import ProjectSidebar from './ProjectSidebar';
@@ -9,14 +9,28 @@ import {
 } from 'lucide-react';
 
 export default function Layout() {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-  const [mobileMoreOpen, setMobileMoreOpen] = useState(false);
-  const [projectSidebarOpen, setProjectSidebarOpen] = useState(true);
   const location = useLocation();
 
   // Check if we're on a project details page
-  const isProjectPage = location.pathname.match(/^\/projects\/\d+/);
+  const isProjectPage = Boolean(location.pathname.match(/^\/projects\/\d+/));
+
+  const [projectSidebarOpen, setProjectSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(!isProjectPage);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [mobileMoreOpen, setMobileMoreOpen] = useState(false);
+
+  // When Project Overview sidebar is open, the main sidebar will automatically collapse
+  useEffect(() => {
+    if (isProjectPage) {
+      if (projectSidebarOpen) {
+        setSidebarOpen(false);
+      } else {
+        setSidebarOpen(true);
+      }
+    } else {
+      setSidebarOpen(true);
+    }
+  }, [isProjectPage, projectSidebarOpen]);
 
   const mobileNavItems = [
     { path: '/', label: 'Home', icon: LayoutDashboard },
@@ -61,6 +75,7 @@ export default function Layout() {
         <ProjectSidebar
           isOpen={projectSidebarOpen}
           onClose={() => setProjectSidebarOpen(false)}
+          onToggle={() => setProjectSidebarOpen((prev) => !prev)}
           projectId={location.pathname.split('/')[2]}
         />
       )}
@@ -70,6 +85,9 @@ export default function Layout() {
         <Header
           onMenuClick={() => setMobileSidebarOpen(true)}
           sidebarOpen={sidebarOpen}
+          isProjectPage={isProjectPage}
+          projectSidebarOpen={projectSidebarOpen}
+          onToggleProjectSidebar={() => setProjectSidebarOpen((prev) => !prev)}
         />
 
         {/* Scrollable Page Content */}
