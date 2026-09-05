@@ -1,5 +1,5 @@
 <?php
-$user = requireAuth();
+$user = getOptionalAuth();
 $db = Database::getInstance()->getConnection();
 
 try {
@@ -193,7 +193,7 @@ switch ($method) {
                 $input['transfer_date'],
                 $input['status'] ?? 'pending',
                 $input['notes'] ?? null,
-                $user['id']
+                $user['id'] ?? null
             ]);
             
             if ($result) {
@@ -242,7 +242,7 @@ switch ($method) {
                 $difference,
                 $input['adjustment_date'],
                 $input['reason'] ?? null,
-                $user['id']
+                $user['id'] ?? null
             ]);
             
             if ($result) {

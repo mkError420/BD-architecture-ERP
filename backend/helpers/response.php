@@ -9,6 +9,20 @@ function sendSuccess($data = null, string $message = 'Success', int $code = 200)
     sendResponse(['success' => true, 'message' => $message, 'data' => $data], $code);
 }
 
+function sendJson($data = null, int $code = 200): void {
+    if (is_array($data) && isset($data['success'])) {
+        sendResponse($data, $code);
+    } elseif (is_array($data) && (isset($data['message']) || isset($data['pagination']))) {
+        $res = ['success' => true];
+        foreach ($data as $k => $v) {
+            $res[$k] = $v;
+        }
+        sendResponse($res, $code);
+    } else {
+        sendResponse(['success' => true, 'data' => $data], $code);
+    }
+}
+
 function sendError(string $message = 'Error', int $code = 400, $errors = null): void {
     $res = ['success' => false, 'message' => $message];
     if ($errors) $res['errors'] = $errors;

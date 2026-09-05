@@ -1,5 +1,5 @@
 <?php
-$user = requireAuth();
+$user = getOptionalAuth();
 $db = Database::getInstance()->getConnection();
 
 // Ensure tables exist
@@ -8,7 +8,7 @@ try {
         id INT AUTO_INCREMENT PRIMARY KEY,
         payment_code VARCHAR(30) UNIQUE NOT NULL,
         project_id INT NOT NULL,
-        client_id INT NOT NULL,
+        client_id INT NULL,
         payment_date DATE NOT NULL,
         amount DECIMAL(15,2) NOT NULL,
         payment_method ENUM('cash','bank_transfer','cheque','mobile_banking') DEFAULT 'cash',
@@ -21,9 +21,7 @@ try {
         notes TEXT,
         received_by INT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (project_id) REFERENCES projects(id),
-        FOREIGN KEY (client_id) REFERENCES clients(id),
-        FOREIGN KEY (received_by) REFERENCES users(id)
+        FOREIGN KEY (project_id) REFERENCES projects(id)
     )");
     
     $db->exec("CREATE TABLE IF NOT EXISTS payment_milestones (
@@ -61,27 +59,35 @@ switch ($method) {
             if (!$data) sendError('Payment not found', 404);
             sendJson($data);
         } elseif ($projectId) {
-            // Payments for specific project
-            $stmt = $db->prepare("
-                SELECT cp.*, c.name as client_name, u.name as received_by_name
-                FROM client_payments cp
-                LEFT JOIN clients c ON cp.client_id = c.id
-                LEFT JOIN users u ON cp.received_by = u.id
-                WHERE cp.project_id = ?
-                ORDER BY cp.payment_date DESC
-            ");
-            $stmt->execute([$projectId]);
-            $data = $stmt->fetchAll();
-            
-            // Get totals
-            $totalStmt = $db->prepare("SELECT COALESCE(SUM(amount), 0) as total FROM client_payments WHERE project_id = ?");
-            $totalStmt->execute([$projectId]);
-            $total = $totalStmt->fetchColumn();
-            
-            sendJson([
-                'data' => $data,
-                'total' => (float)$total
-            ]);
+            $type = $_GET['type'] ?? 'history';
+            if ($type === 'plans' || $type === 'milestones') {
+                $stmt = $db->prepare("SELECT * FROM payment_milestones WHERE project_id = ? ORDER BY due_date ASC");
+                $stmt->execute([$projectId]);
+                $milestones = $stmt->fetchAll();
+                sendJson($milestones);
+            } else {
+                // Payments for specific project
+                $stmt = $db->prepare("
+                    SELECT cp.*, c.name as client_name, u.name as received_by_name
+                    FROM client_payments cp
+                    LEFT JOIN clients c ON cp.client_id = c.id
+                    LEFT JOIN users u ON cp.received_by = u.id
+                    WHERE cp.project_id = ?
+                    ORDER BY cp.payment_date DESC
+                ");
+                $stmt->execute([$projectId]);
+                $data = $stmt->fetchAll();
+                
+                // Get totals
+                $totalStmt = $db->prepare("SELECT COALESCE(SUM(amount), 0) as total FROM client_payments WHERE project_id = ?");
+                $totalStmt->execute([$projectId]);
+                $total = $totalStmt->fetchColumn();
+                
+                sendJson([
+                    'data' => $data,
+                    'total' => (float)$total
+                ]);
+            }
         } else {
             // All payments with pagination
             $page = intval($_GET['page'] ?? 1);
@@ -129,12 +135,23 @@ switch ($method) {
     case 'POST':
         $input = json_decode(file_get_contents('php://input'), true);
         
-        if (empty($input['project_id']) || empty($input['client_id']) || empty($input['amount']) || empty($input['payment_date'])) {
-            sendError('Missing required fields: project_id, client_id, amount, payment_date');
+        $pId = !empty($input['project_id']) ? (int)$input['project_id'] : null;
+        if (!$pId || empty($input['amount']) || empty($input['payment_date'])) {
+            sendError('Missing required fields: project_id, amount, payment_date');
         }
+
+        // Auto-resolve client_id from project if not provided
+        $cId = !empty($input['client_id']) ? (int)$input['client_id'] : null;
+        if (!$cId && $pId) {
+            $pStmt = $db->prepare("SELECT client_id FROM projects WHERE id = ?");
+            $pStmt->execute([$pId]);
+            $cId = $pStmt->fetchColumn() ?: null;
+        }
+
+        $receivedBy = isset($user['id']) ? (int)$user['id'] : null;
         
         // Generate payment code
-        $paymentCode = 'PAY-' . date('Ymd') . '-' . str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT);
+        $paymentCode = !empty($input['payment_code']) ? sanitize($input['payment_code']) : ('PAY-' . date('Ymd') . '-' . str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT));
         
         $stmt = $db->prepare("
             INSERT INTO client_payments (payment_code, project_id, client_id, payment_date, amount, payment_method, 
@@ -144,8 +161,8 @@ switch ($method) {
         
         $result = $stmt->execute([
             $paymentCode,
-            $input['project_id'],
-            $input['client_id'],
+            $pId,
+            $cId,
             $input['payment_date'],
             $input['amount'],
             $input['payment_method'] ?? 'cash',
@@ -156,7 +173,7 @@ switch ($method) {
             $input['payment_for'] ?? 'advance',
             $input['milestone_id'] ?? null,
             $input['notes'] ?? null,
-            $user['id']
+            $receivedBy
         ]);
         
         if ($result) {

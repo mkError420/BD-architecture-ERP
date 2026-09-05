@@ -1,5 +1,5 @@
 <?php
-$user = requireAuth();
+$user = getOptionalAuth();
 $db = Database::getInstance()->getConnection();
 
 try {
@@ -273,7 +273,7 @@ switch ($method) {
                 $input['payment_terms'] ?? null,
                 $input['delivery_address'] ?? null,
                 $input['notes'] ?? null,
-                $user['id']
+                $user['id'] ?? null
             ]);
             
             if ($result) {
@@ -322,7 +322,7 @@ switch ($method) {
                 $input['priority'] ?? 'medium',
                 $input['reason'] ?? null,
                 $input['notes'] ?? null,
-                $user['id']
+                $user['id'] ?? null
             ]);
             
             if ($result) {

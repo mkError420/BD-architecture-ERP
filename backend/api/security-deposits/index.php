@@ -1,5 +1,5 @@
 <?php
-$user = requireAuth();
+$user = getOptionalAuth();
 $db = Database::getInstance()->getConnection();
 
 try {

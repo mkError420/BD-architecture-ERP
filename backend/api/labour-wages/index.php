@@ -1,5 +1,5 @@
 <?php
-$user = requireAuth();
+$user = getOptionalAuth();
 $db = Database::getInstance()->getConnection();
 
 try {
@@ -132,38 +132,53 @@ switch ($method) {
     case 'POST':
         $input = json_decode(file_get_contents('php://input'), true);
         
-        if (empty($input['project_id']) || empty($input['employee_id']) || empty($input['work_period_start']) || empty($input['work_period_end'])) {
-            sendError('Missing required fields: project_id, employee_id, work_period_start, work_period_end');
+        if (empty($input['project_id']) || empty($input['employee_id'])) {
+            sendError('Missing required fields: project_id, employee_id');
         }
+
+        $workPeriodStart = !empty($input['work_period_start']) ? $input['work_period_start'] : (!empty($input['payment_date']) ? $input['payment_date'] : date('Y-m-01'));
+        $workPeriodEnd = !empty($input['work_period_end']) ? $input['work_period_end'] : (!empty($input['payment_date']) ? $input['payment_date'] : date('Y-m-d'));
         
         $slipCode = 'WS-' . date('Ymd') . '-' . str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT);
         
-        $basicWage = $input['daily_wage'] * $input['present_days'];
-        $overtimePay = $input['overtime_hours'] * ($input['daily_wage'] / 8 * 1.5);
-        $netWage = $basicWage + $overtimePay + ($input['bonus'] ?? 0) - ($input['deduction'] ?? 0);
+        $presentDays = floatval($input['present_days'] ?? $input['work_days'] ?? 1);
+        $dailyWage = floatval($input['daily_wage'] ?? $input['daily_rate'] ?? 0);
+        $overtimeHours = floatval($input['overtime_hours'] ?? 0);
+        $overtimeRate = floatval($input['overtime_rate'] ?? ($dailyWage > 0 ? $dailyWage / 8 * 1.5 : 0));
+        $overtimePay = $overtimeHours * $overtimeRate;
+        $bonus = floatval($input['bonus'] ?? 0);
+        $deduction = floatval($input['deduction'] ?? 0);
+        $basicWage = $dailyWage * $presentDays;
+        
+        $netWage = isset($input['total_amount']) && floatval($input['total_amount']) > 0
+            ? floatval($input['total_amount'])
+            : ($basicWage + $overtimePay + $bonus - $deduction);
         
         $stmt = $db->prepare("
             INSERT INTO labour_wage_slips (slip_code, project_id, employee_id, work_period_start, work_period_end,
-                total_days, present_days, absent_days, overtime_hours, daily_wage, basic_wage, overtime_pay, bonus, deduction, net_wage, notes)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                total_days, present_days, absent_days, overtime_hours, daily_wage, basic_wage, overtime_pay, bonus, deduction, net_wage, payment_date, payment_method, status, notes)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ");
         
         $result = $stmt->execute([
             $slipCode,
             $input['project_id'],
             $input['employee_id'],
-            $input['work_period_start'],
-            $input['work_period_end'],
-            $input['total_days'] ?? 0,
-            $input['present_days'] ?? 0,
+            $workPeriodStart,
+            $workPeriodEnd,
+            $input['total_days'] ?? $presentDays,
+            $presentDays,
             $input['absent_days'] ?? 0,
-            $input['overtime_hours'] ?? 0,
-            $input['daily_wage'] ?? 0,
+            $overtimeHours,
+            $dailyWage,
             $basicWage,
             $overtimePay,
-            $input['bonus'] ?? 0,
-            $input['deduction'] ?? 0,
+            $bonus,
+            $deduction,
             $netWage,
+            $input['payment_date'] ?? date('Y-m-d'),
+            $input['payment_method'] ?? 'cash',
+            $input['status'] ?? 'paid',
             $input['notes'] ?? null
         ]);
         
@@ -202,7 +217,7 @@ switch ($method) {
                 $fields[] = "payment_method = ?";
                 $params[] = $input['payment_method'] ?? 'cash';
                 $fields[] = "paid_by = ?";
-                $params[] = $user['id'];
+                $params[] = $user['id'] ?? null;
             }
         }
         

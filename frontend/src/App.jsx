@@ -94,6 +94,7 @@ export default function App() {
             <Route path="projects/:projectId/stock/transfers" element={<StockManagement />} />
             <Route path="projects/:projectId/stock/adjustments" element={<StockManagement />} />
             <Route path="projects/:projectId/labour-wages" element={<LabourWages />} />
+            <Route path="projects/:projectId/salary" element={<SalarySlips />} />
             <Route path="projects/:projectId/salary-slips" element={<SalarySlips />} />
             <Route path="projects/:projectId/tools/inventory" element={<ToolsManagement />} />
             <Route path="projects/:projectId/tools/assignments" element={<ToolsManagement />} />

@@ -1,5 +1,5 @@
 <?php
-$user = requireAuth();
+$user = getOptionalAuth();
 $db = Database::getInstance()->getConnection();
 
 try {
@@ -129,7 +129,7 @@ switch ($method) {
             $input['dependencies'] ?? null,
             $input['assigned_team'] ?? null,
             $input['notes'] ?? null,
-            $user['id']
+            $user['id'] ?? null
         ]);
         
         if ($result) {

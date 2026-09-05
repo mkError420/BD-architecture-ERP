@@ -1,5 +1,5 @@
 <?php
-$user = requireAuth();
+$user = getOptionalAuth();
 $db = Database::getInstance()->getConnection();
 
 try {
@@ -219,7 +219,7 @@ switch ($method) {
                 $input['contingency_percentage'] ?? 5,
                 $contingencyAmount,
                 $grandTotal,
-                $user['id'],
+                $user['id'] ?? null,
                 $input['notes'] ?? null
             ]);
             

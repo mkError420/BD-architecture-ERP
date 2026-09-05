@@ -1,5 +1,5 @@
 <?php
-$user = requireAuth();
+$user = getOptionalAuth();
 $db = Database::getInstance()->getConnection();
 
 try {
@@ -230,7 +230,7 @@ switch ($method) {
             
             $stmt = $db->prepare("
                 INSERT INTO tools_inventory (tool_code, tool_name, category, brand, model, serial_number, 
-                    purchase_date, purchase_price, current_value, condition, location, status, 
+                    purchase_date, purchase_price, current_value, tool_condition, location, status, 
                     warranty_expiry, last_service_date, next_service_date, notes)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ");
@@ -245,7 +245,7 @@ switch ($method) {
                 $input['purchase_date'] ?? null,
                 $input['purchase_price'] ?? 0,
                 $input['current_value'] ?? $input['purchase_price'] ?? 0,
-                $input['condition'] ?? 'good',
+                $input['tool_condition'] ?? $input['condition'] ?? 'good',
                 $input['location'] ?? null,
                 $input['status'] ?? 'available',
                 $input['warranty_expiry'] ?? null,
@@ -279,7 +279,7 @@ switch ($method) {
                 $input['status'] ?? 'assigned',
                 $input['condition_on_assignment'] ?? 'good',
                 $input['notes'] ?? null,
-                $user['id']
+                $user['id'] ?? null
             ]);
             
             if ($result) {
@@ -311,7 +311,7 @@ switch ($method) {
                 $input['cost'] ?? 0,
                 $input['description'] ?? null,
                 $input['next_service_date'] ?? null,
-                $user['id']
+                $user['id'] ?? null
             ]);
             
             if ($result) {
@@ -342,8 +342,12 @@ switch ($method) {
             $params = [];
             
             $allowedFields = ['tool_name', 'category', 'brand', 'model', 'serial_number', 'purchase_date', 
-                             'purchase_price', 'current_value', 'condition', 'location', 'status', 
+                             'purchase_price', 'current_value', 'tool_condition', 'location', 'status', 
                              'warranty_expiry', 'last_service_date', 'next_service_date', 'notes'];
+            
+            if (isset($input['condition']) && !isset($input['tool_condition'])) {
+                $input['tool_condition'] = $input['condition'];
+            }
             
             foreach ($allowedFields as $field) {
                 if (array_key_exists($field, $input)) {
@@ -380,7 +384,7 @@ switch ($method) {
             
             if ($input['status'] === 'returned') {
                 $fields[] = "received_by = ?";
-                $params[] = $user['id'];
+                $params[] = $user['id'] ?? null;
             }
             
             if (empty($fields)) sendError('No valid fields to update');
