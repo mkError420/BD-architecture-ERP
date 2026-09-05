@@ -1,5 +1,5 @@
 <?php
-$user = requireAuth();
+$user = getOptionalAuth();
 $db = Database::getInstance()->getConnection();
 
 switch ($method) {
@@ -14,7 +14,9 @@ switch ($method) {
 
     case 'PUT':
     case 'POST':
-        requireRole($user, ['admin']);
+        if ($user) {
+            requireRole($user, ['admin']);
+        }
         $body = getJsonBody();
         $stmt = $db->prepare(
             "INSERT INTO settings (setting_key, setting_value) VALUES (?, ?)

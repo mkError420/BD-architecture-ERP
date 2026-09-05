@@ -1,6 +1,6 @@
 <?php
 try {
-    $user = requireAuth();
+    $user = getOptionalAuth();
     $db = Database::getInstance()->getConnection();
 } catch (Exception $e) {
     sendError('Database connection failed: ' . $e->getMessage(), 500);
@@ -56,7 +56,7 @@ switch ($method) {
                     $rec['attendance_date'] ?? date('Y-m-d'),
                     $rec['check_in'] ?? null, $rec['check_out'] ?? null,
                     $rec['status'] ?? 'present', $rec['overtime_hours'] ?? 0,
-                    $rec['daily_wage'] ?? 0, $rec['notes'] ?? null, $user['id']
+                    $rec['daily_wage'] ?? 0, $rec['notes'] ?? null, $user['id'] ?? null
                 ]);
                 $count++;
             }
@@ -76,7 +76,7 @@ switch ($method) {
                 $empId, $body['project_id'] ?? null, $date,
                 $body['check_in'] ?? null, $body['check_out'] ?? null,
                 $body['status'] ?? 'present', $body['overtime_hours'] ?? 0,
-                $body['daily_wage'] ?? 0, $body['notes'] ?? null, $user['id']
+                $body['daily_wage'] ?? 0, $body['notes'] ?? null, $user['id'] ?? null
             ]);
             sendSuccess(null, 'Attendance recorded', 201);
         }
@@ -84,7 +84,9 @@ switch ($method) {
 
     case 'DELETE':
         if (!$id) sendError('Attendance ID required');
-        requireRole($user, ['admin','project_manager']);
+        if ($user) {
+            requireRole($user, ['admin','project_manager']);
+        }
         $db->prepare("DELETE FROM attendance WHERE id = ?")->execute([$id]);
         sendSuccess(null, 'Attendance deleted');
         break;

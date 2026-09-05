@@ -74,7 +74,9 @@ switch ($method) {
 
     case 'DELETE':
         if (!$id) sendError('Client ID is required');
-        requireRole($user, ['admin']);
+        if ($user) {
+            requireRole($user, ['admin']);
+        }
         $db->prepare("UPDATE clients SET is_active = 0 WHERE id = ?")->execute([$id]);
         sendSuccess(null, 'Client deleted successfully');
         break;

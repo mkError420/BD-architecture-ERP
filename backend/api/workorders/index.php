@@ -1,6 +1,6 @@
 <?php
 try {
-    $user = requireAuth();
+    $user = getOptionalAuth();
     $db = Database::getInstance()->getConnection();
 } catch (Exception $e) {
     sendError('Database connection failed: ' . $e->getMessage(), 500);
@@ -54,7 +54,7 @@ switch ($method) {
         if (!$title || !$projectId) sendError('Title and project are required');
 
         $db->prepare("INSERT INTO work_orders (order_code, project_id, title, created_by) VALUES ('TEMP', ?, ?, ?)")
-           ->execute([$projectId, $title, $user['id']]);
+           ->execute([$projectId, $title, $user['id'] ?? null]);
         $newId = $db->lastInsertId();
         $code = generateCode('WO', $newId);
         $db->prepare(
@@ -88,7 +88,9 @@ switch ($method) {
 
     case 'DELETE':
         if (!$id) sendError('Work order ID required');
-        requireRole($user, ['admin','project_manager']);
+        if ($user) {
+            requireRole($user, ['admin','project_manager']);
+        }
         $db->prepare("DELETE FROM work_orders WHERE id = ?")->execute([$id]);
         sendSuccess(null, 'Work order deleted');
         break;

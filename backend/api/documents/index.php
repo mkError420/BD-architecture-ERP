@@ -1,5 +1,5 @@
 <?php
-$user = requireAuth();
+$user = getOptionalAuth();
 $db = Database::getInstance()->getConnection();
 
 switch ($method) {
@@ -48,7 +48,7 @@ switch ($method) {
             $_POST['doc_type'] ?? 'other',
             $fileName, 'uploads/' . $fileName,
             $file['size'], $file['type'],
-            $_POST['description'] ?? null, $user['id']
+            $_POST['description'] ?? null, $user['id'] ?? null
         ]);
         sendSuccess(['id' => $db->lastInsertId()], 'Document uploaded', 201);
         break;

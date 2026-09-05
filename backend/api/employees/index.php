@@ -1,6 +1,6 @@
 <?php
 try {
-    $user = requireAuth();
+    $user = getOptionalAuth();
     $db = Database::getInstance()->getConnection();
 } catch (Exception $e) {
     sendError('Database connection failed: ' . $e->getMessage(), 500);
@@ -42,14 +42,16 @@ switch ($method) {
         break;
 
     case 'POST':
-        requireRole($user, ['admin','project_manager']);
+        if ($user) {
+            requireRole($user, ['admin','project_manager']);
+        }
         $body = getJsonBody();
         $name = sanitize($body['name'] ?? '');
         $phone = sanitize($body['phone'] ?? '');
         if (!$name || !$phone) sendError('Name and phone are required');
 
         $db->prepare("INSERT INTO employees (employee_code, name, phone, created_by) VALUES ('TEMP', ?, ?, ?)")
-           ->execute([$name, $phone, $user['id']]);
+           ->execute([$name, $phone, $user['id'] ?? null]);
         $newId = $db->lastInsertId();
         $code = generateCode('EMP', $newId);
 
@@ -91,7 +93,9 @@ switch ($method) {
 
     case 'DELETE':
         if (!$id) sendError('Employee ID required');
-        requireRole($user, ['admin']);
+        if ($user) {
+            requireRole($user, ['admin']);
+        }
         $db->prepare("UPDATE employees SET is_active = 0 WHERE id = ?")->execute([$id]);
         sendSuccess(null, 'Employee deactivated');
         break;

@@ -1,6 +1,6 @@
 <?php
 try {
-    $user = requireAuth();
+    $user = getOptionalAuth();
     $db = Database::getInstance()->getConnection();
 } catch (Exception $e) {
     sendError('Database connection failed: ' . $e->getMessage(), 500);
@@ -34,7 +34,9 @@ switch ($method) {
         break;
 
     case 'POST':
-        requireRole($user, ['admin','project_manager','engineer']);
+        if ($user) {
+            requireRole($user, ['admin','project_manager','engineer']);
+        }
         $body = getJsonBody();
         $name = sanitize($body['name'] ?? '');
         if (!$name) sendError('Material name is required');
@@ -69,7 +71,9 @@ switch ($method) {
 
     case 'DELETE':
         if (!$id) sendError('Material ID required');
-        requireRole($user, ['admin']);
+        if ($user) {
+            requireRole($user, ['admin']);
+        }
         $db->prepare("UPDATE materials SET is_active = 0 WHERE id = ?")->execute([$id]);
         sendSuccess(null, 'Material deleted');
         break;

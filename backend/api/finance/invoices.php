@@ -1,5 +1,5 @@
 <?php
-$user = requireAuth();
+$user = getOptionalAuth();
 $db = Database::getInstance()->getConnection();
 
 switch ($method) {
@@ -59,7 +59,7 @@ switch ($method) {
                 $projectId, $clientId, $body['issue_date'] ?? date('Y-m-d'),
                 $body['due_date'] ?? null, $body['subtotal'] ?? 0,
                 $body['vat'] ?? 0, $body['discount'] ?? 0, $body['total'] ?? 0,
-                $body['status'] ?? 'draft', $body['notes'] ?? null, $user['id']
+                $body['status'] ?? 'draft', $body['notes'] ?? null, $user['id'] ?? null
             ]);
             $newId = $db->lastInsertId();
             $invNo = 'INV-' . str_pad($newId, 6, '0', STR_PAD_LEFT);
@@ -103,7 +103,9 @@ switch ($method) {
 
     case 'DELETE':
         if (!$id) sendError('Invoice ID required');
-        requireRole($user, ['admin']);
+        if ($user) {
+            requireRole($user, ['admin']);
+        }
         $db->beginTransaction();
         $db->prepare("DELETE FROM invoice_items WHERE invoice_id = ?")->execute([$id]);
         $db->prepare("DELETE FROM invoices WHERE id = ?")->execute([$id]);

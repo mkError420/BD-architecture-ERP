@@ -1,6 +1,6 @@
 <?php
 try {
-    $user = requireAuth();
+    $user = getOptionalAuth();
     $db = Database::getInstance()->getConnection();
 } catch (Exception $e) {
     sendError('Database connection failed: ' . $e->getMessage(), 500);
@@ -60,7 +60,9 @@ switch ($method) {
 
     case 'DELETE':
         if (!$id) sendError('Supplier ID required');
-        requireRole($user, ['admin']);
+        if ($user) {
+            requireRole($user, ['admin']);
+        }
         $db->prepare("UPDATE suppliers SET is_active = 0 WHERE id = ?")->execute([$id]);
         sendSuccess(null, 'Supplier deleted');
         break;

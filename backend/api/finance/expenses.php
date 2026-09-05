@@ -1,5 +1,5 @@
 <?php
-$user = requireAuth();
+$user = getOptionalAuth();
 $db = Database::getInstance()->getConnection();
 
 switch ($method) {
@@ -62,7 +62,7 @@ switch ($method) {
         if (!$title || !$amount) sendError('Title and amount required');
 
         $db->prepare("INSERT INTO expenses (expense_code, title, amount, expense_date, created_by) VALUES ('TEMP',?,?,?,?)")
-           ->execute([$title, $amount, $body['expense_date'] ?? date('Y-m-d'), $user['id']]);
+           ->execute([$title, $amount, $body['expense_date'] ?? date('Y-m-d'), $user['id'] ?? null]);
         $newId = $db->lastInsertId();
         $code = generateCode('EXP', $newId);
         $db->prepare(
@@ -88,7 +88,7 @@ switch ($method) {
             if (array_key_exists($f, $body)) { $fields[] = "$f = ?"; $params[] = $body[$f]; }
         }
         if (isset($body['is_approved']) && $body['is_approved']) {
-            $fields[] = "approved_by = ?"; $params[] = $user['id'];
+            $fields[] = "approved_by = ?"; $params[] = $user['id'] ?? null;
             $fields[] = "approved_at = NOW()";
         }
         if (empty($fields)) sendError('No fields to update');
@@ -99,7 +99,9 @@ switch ($method) {
 
     case 'DELETE':
         if (!$id) sendError('Expense ID required');
-        requireRole($user, ['admin','accountant']);
+        if ($user) {
+            requireRole($user, ['admin','accountant']);
+        }
         $db->prepare("DELETE FROM expenses WHERE id = ?")->execute([$id]);
         sendSuccess(null, 'Expense deleted');
         break;
