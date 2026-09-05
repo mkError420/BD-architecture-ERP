@@ -1212,15 +1212,26 @@ export default function ProjectDetails() {
                 {project.expenses.map((exp) => (
                   <div key={exp.id} className="py-3 flex items-center justify-between text-xs">
                     <div>
-                      <div className="font-bold text-gray-900">{exp.title}</div>
+                      <div className="font-bold text-gray-900 flex items-center gap-1.5 flex-wrap">
+                        {exp.title}
+                        {exp.invoice_id && (
+                          <span className="text-[10px] uppercase font-bold bg-blue-100 text-blue-800 px-1.5 py-0.2 rounded border border-blue-200">Invoice</span>
+                        )}
+                      </div>
                       <div className="text-gray-500 text-[11px]">
                         {formatDate(exp.expense_date)} • Category: <strong className="capitalize">{exp.category}</strong> • Paid to: {exp.paid_to || 'Cash Voucher'}
                       </div>
                     </div>
                     <div className="text-right">
                       <span className="font-bold text-gray-900 block text-sm">{formatCurrency(exp.amount)}</span>
-                      <span className={`text-[10px] px-1.5 py-0.5 rounded font-semibold ${exp.is_approved ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}>
-                        {exp.is_approved ? 'Approved' : 'Pending Approval'}
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded font-semibold capitalize ${
+                        exp.status === 'paid' ? 'bg-emerald-50 text-emerald-700'
+                        : exp.status === 'partially_paid' ? 'bg-blue-50 text-blue-700'
+                        : exp.status === 'overdue' ? 'bg-rose-50 text-rose-700'
+                        : exp.status === 'sent' ? 'bg-indigo-50 text-indigo-700'
+                        : exp.is_approved ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'
+                      }`}>
+                        {exp.status ? exp.status.replace('_', ' ') : (exp.is_approved ? 'Approved' : 'Pending Approval')}
                       </span>
                     </div>
                   </div>

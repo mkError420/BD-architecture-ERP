@@ -84,7 +84,15 @@ switch ($method) {
 
             // Fetch Expenses summary for this project
             try {
-                $expStmt = $db->prepare("SELECT id, expense_code, title, category, amount, expense_date, paid_to, payment_method, is_approved FROM expenses WHERE project_id = ? ORDER BY expense_date DESC LIMIT 50");
+                $expStmt = $db->prepare("
+                    SELECT e.id, e.expense_code, e.title, e.category, e.amount, e.expense_date, e.paid_to, e.payment_method, e.is_approved,
+                           COALESCE(i.status, e.status, IF(e.is_approved = 1, 'paid', 'pending')) as status,
+                           e.invoice_id, i.invoice_no
+                    FROM expenses e
+                    LEFT JOIN invoices i ON e.invoice_id = i.id
+                    WHERE e.project_id = ?
+                    ORDER BY e.expense_date DESC LIMIT 50
+                ");
                 $expStmt->execute([$id]);
                 $project['expenses'] = $expStmt->fetchAll();
                 

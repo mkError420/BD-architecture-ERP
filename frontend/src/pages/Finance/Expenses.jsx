@@ -4,7 +4,7 @@ import DataTable from '../../components/ui/DataTable';
 import Modal from '../../components/ui/Modal';
 import DeleteConfirm from '../../components/ui/DeleteConfirm';
 import { formatCurrency, formatDate, EXPENSE_CATEGORIES, PAYMENT_METHODS } from '../../utils/helpers';
-import { Plus, Search, Wallet, DollarSign, CheckCircle2, Clock, FileText, Trash2, Edit2 } from 'lucide-react';
+import { Plus, Search, Wallet, DollarSign, CheckCircle2, Clock, FileText, Trash2, Edit2, AlertCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const DEMO_EXPENSES = [
@@ -289,8 +289,15 @@ export default function Expenses() {
       header: 'Voucher & Description',
       render: (row) => (
         <div>
-          <div className="flex items-center gap-2">
-            <span className="font-mono text-xs text-primary-700 bg-primary-50 px-1.5 py-0.5 rounded font-semibold">{row.expense_code}</span>
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="font-mono text-xs text-primary-700 bg-primary-50 px-1.5 py-0.5 rounded font-semibold border border-primary-200">
+              {row.expense_code}
+            </span>
+            {(row.invoice_id || row.invoice_no) && (
+              <span className="text-[10px] font-bold uppercase tracking-wider bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded border border-blue-200">
+                Invoice Bill
+              </span>
+            )}
             <span className="font-bold text-gray-900">{row.title}</span>
           </div>
           <div className="text-xs text-gray-500 mt-0.5">
@@ -330,12 +337,27 @@ export default function Expenses() {
     },
     {
       header: 'Status',
-      render: (row) => (
-        <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold ${row.is_approved ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
-          {row.is_approved ? <CheckCircle2 size={12} /> : <Clock size={12} />}
-          {row.is_approved ? 'Approved' : 'Pending'}
-        </span>
-      ),
+      render: (row) => {
+        const st = String(row.status || (row.is_approved ? 'paid' : 'pending')).toLowerCase();
+        const STATUS_MAP = {
+          paid: { label: 'Paid', bg: 'bg-emerald-50 text-emerald-700 border-emerald-200', icon: CheckCircle2 },
+          approved: { label: 'Approved', bg: 'bg-emerald-50 text-emerald-700 border-emerald-200', icon: CheckCircle2 },
+          partially_paid: { label: 'Partially Paid', bg: 'bg-blue-50 text-blue-700 border-blue-200', icon: Clock },
+          sent: { label: 'Sent', bg: 'bg-indigo-50 text-indigo-700 border-indigo-200', icon: Clock },
+          overdue: { label: 'Overdue', bg: 'bg-rose-50 text-rose-700 border-rose-200', icon: AlertCircle },
+          draft: { label: 'Draft', bg: 'bg-gray-100 text-gray-700 border-gray-200', icon: Clock },
+          pending: { label: 'Pending', bg: 'bg-amber-50 text-amber-700 border-amber-200', icon: Clock },
+          cancelled: { label: 'Cancelled', bg: 'bg-red-50 text-red-700 border-red-200', icon: AlertCircle },
+        };
+        const cfg = STATUS_MAP[st] || STATUS_MAP.pending;
+        const Icon = cfg.icon;
+        return (
+          <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold border ${cfg.bg}`}>
+            <Icon size={12} />
+            {cfg.label}
+          </span>
+        );
+      },
     },
     {
       header: 'Actions',

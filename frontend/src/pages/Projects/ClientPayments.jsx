@@ -574,6 +574,22 @@ export default function ClientPayments() {
     }
   };
 
+  const handleQuickInvoiceStatusChange = async (inv, newStatus) => {
+    try {
+      setInvoices((prev) =>
+        prev.map((i) => (i.id === inv.id ? { ...i, status: newStatus } : i))
+      );
+      await invoicesAPI.update(inv.id, { status: newStatus });
+      toast.success(
+        `Invoice ${inv.invoice_no} status changed to "${newStatus.replace('_', ' ')}" (synced with Project Expenses & Cost Tracking)!`
+      );
+      loadAll();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to update invoice status');
+      loadAll();
+    }
+  };
+
   // --- Deletion Handlers ---
   const confirmDelete = (type, item) => {
     setDeleteTarget({ type, item });
@@ -1258,7 +1274,33 @@ export default function ClientPayments() {
                             {formatCurrency(balance)}
                           </td>
                           <td className="px-5 py-4">
-                            {getInvoiceStatusBadge(inv.status, inv.due_date)}
+                            <div className="relative inline-block">
+                              <select
+                                value={inv.status || 'sent'}
+                                onChange={(e) => handleQuickInvoiceStatusChange(inv, e.target.value)}
+                                className={`text-xs font-semibold px-2.5 py-1 rounded-full border cursor-pointer transition-all outline-none ${
+                                  inv.status === 'paid'
+                                    ? 'bg-emerald-50 text-emerald-700 border-emerald-300 hover:bg-emerald-100'
+                                    : inv.status === 'partially_paid'
+                                    ? 'bg-blue-50 text-blue-700 border-blue-300 hover:bg-blue-100'
+                                    : inv.status === 'sent'
+                                    ? 'bg-indigo-50 text-indigo-700 border-indigo-300 hover:bg-indigo-100'
+                                    : inv.status === 'overdue'
+                                    ? 'bg-rose-50 text-rose-700 border-rose-300 hover:bg-rose-100'
+                                    : inv.status === 'draft'
+                                    ? 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200'
+                                    : 'bg-amber-50 text-amber-700 border-amber-300 hover:bg-amber-100'
+                                }`}
+                                title="Click to change status (automatically updates Project Expenses & Cost Tracking)"
+                              >
+                                <option value="draft">Draft</option>
+                                <option value="sent">Sent</option>
+                                <option value="partially_paid">Partially Paid</option>
+                                <option value="paid">Paid</option>
+                                <option value="overdue">Overdue</option>
+                                <option value="cancelled">Cancelled</option>
+                              </select>
+                            </div>
                           </td>
                           <td className="px-5 py-4 text-right">
                             <div className="flex items-center gap-1 justify-end">

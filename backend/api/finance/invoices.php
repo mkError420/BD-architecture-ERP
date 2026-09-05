@@ -41,6 +41,76 @@ try {
     // Ignore table creation errors
 }
 
+// Function to synchronize invoice status & record with expenses table (Project Expenses & Cost Tracking)
+function syncInvoiceToExpense($db, $invoiceId) {
+    try {
+        // Ensure expenses table has invoice_id and status columns
+        try { $db->exec("ALTER TABLE expenses ADD COLUMN invoice_id INT NULL"); } catch (Exception $e) {}
+        try { $db->exec("ALTER TABLE expenses ADD COLUMN status VARCHAR(50) DEFAULT 'approved'"); } catch (Exception $e) {}
+
+        $stmt = $db->prepare("
+            SELECT i.*, p.name as project_name, c.name as client_name
+            FROM invoices i
+            LEFT JOIN projects p ON i.project_id = p.id
+            LEFT JOIN clients c ON i.client_id = c.id
+            WHERE i.id = ?
+        ");
+        $stmt->execute([$invoiceId]);
+        $inv = $stmt->fetch();
+        if (!$inv) return;
+
+        $status = $inv['status'] ?? 'sent';
+        $isApproved = ($status === 'paid' || $status === 'partially_paid' || $status === 'sent') ? 1 : 0;
+        $amount = (float)$inv['total'];
+        if ($amount <= 0 && (float)$inv['paid_amount'] > 0) {
+            $amount = (float)$inv['paid_amount'];
+        }
+
+        $check = $db->prepare("SELECT id FROM expenses WHERE invoice_id = ?");
+        $check->execute([$invoiceId]);
+        $expId = $check->fetchColumn();
+
+        if ($expId) {
+            $update = $db->prepare("
+                UPDATE expenses 
+                SET status = ?, is_approved = ?, amount = ?, expense_date = ?, paid_to = ?, notes = ?
+                WHERE invoice_id = ?
+            ");
+            $update->execute([
+                $status,
+                $isApproved,
+                $amount,
+                $inv['issue_date'],
+                $inv['client_name'] ?? 'Client Billing',
+                'Synced from Project Invoice ' . $inv['invoice_no'] . ' (Status: ' . $status . ')',
+                $invoiceId
+            ]);
+        } else {
+            $code = 'EXP-' . $inv['invoice_no'];
+            $title = 'Invoice: ' . $inv['invoice_no'] . ($inv['client_name'] ? ' (' . $inv['client_name'] . ')' : '');
+            $insert = $db->prepare("
+                INSERT INTO expenses (expense_code, project_id, category, title, amount, expense_date, paid_to, payment_method, invoice_id, status, is_approved, notes)
+                VALUES (?, ?, 'other', ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ");
+            $insert->execute([
+                $code,
+                $inv['project_id'],
+                $title,
+                $amount,
+                $inv['issue_date'],
+                $inv['client_name'] ?? 'Client Billing',
+                $inv['payment_method'] ?? 'bank_transfer',
+                $invoiceId,
+                $status,
+                $isApproved,
+                'Auto-synced from Project Invoice ' . $inv['invoice_no'] . ' (Status: ' . $status . ')'
+            ]);
+        }
+    } catch (Exception $e) {
+        // Non-blocking sync error
+    }
+}
+
 switch ($method) {
     case 'GET':
         if ($id) {
@@ -141,6 +211,10 @@ switch ($method) {
                 }
             }
             $db->commit();
+
+            // Synchronize with Project Expenses & Cost Tracking
+            syncInvoiceToExpense($db, $newId);
+
             sendSuccess(['id' => $newId, 'invoice_no' => $invNo], 'Invoice created successfully', 201);
         } catch (Exception $e) {
             $db->rollBack();
@@ -182,6 +256,10 @@ switch ($method) {
             }
 
             $db->commit();
+
+            // Synchronize updated status and details with Project Expenses & Cost Tracking
+            syncInvoiceToExpense($db, $id);
+
             sendSuccess(null, 'Invoice updated successfully');
         } catch (Exception $e) {
             $db->rollBack();
@@ -195,10 +273,17 @@ switch ($method) {
             requireRole($user, ['admin']);
         }
         $db->beginTransaction();
-        $db->prepare("DELETE FROM invoice_items WHERE invoice_id = ?")->execute([$id]);
-        $db->prepare("DELETE FROM invoices WHERE id = ?")->execute([$id]);
-        $db->commit();
-        sendSuccess(null, 'Invoice deleted successfully');
+        try {
+            $db->prepare("DELETE FROM invoice_items WHERE invoice_id = ?")->execute([$id]);
+            $db->prepare("DELETE FROM invoices WHERE id = ?")->execute([$id]);
+            // Remove linked expense record if exists
+            try { $db->prepare("DELETE FROM expenses WHERE invoice_id = ?")->execute([$id]); } catch (Exception $e) {}
+            $db->commit();
+            sendSuccess(null, 'Invoice deleted successfully');
+        } catch (Exception $e) {
+            $db->rollBack();
+            sendError('Failed to delete invoice: ' . $e->getMessage(), 500);
+        }
         break;
 
     default:
