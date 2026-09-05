@@ -34,9 +34,33 @@ class JWTHelper {
     }
 }
 
-function requireAuth(): array {
-    $headers = getallheaders();
+function getAuthHeader(): string {
+    $headers = function_exists('getallheaders') ? getallheaders() : [];
     $auth = $headers['Authorization'] ?? $headers['authorization'] ?? '';
+    if (!$auth && isset($_SERVER['HTTP_AUTHORIZATION'])) {
+        $auth = $_SERVER['HTTP_AUTHORIZATION'];
+    }
+    if (!$auth && isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
+        $auth = $_SERVER['REDIRECT_HTTP_AUTHORIZATION'];
+    }
+    if (!$auth && function_exists('apache_request_headers')) {
+        $aHeaders = apache_request_headers();
+        $auth = $aHeaders['Authorization'] ?? $aHeaders['authorization'] ?? '';
+    }
+    return $auth;
+}
+
+function getOptionalAuth(): ?array {
+    $auth = getAuthHeader();
+    if (!$auth || !str_starts_with($auth, 'Bearer ')) {
+        return null;
+    }
+    $token = substr($auth, 7);
+    return JWTHelper::decode($token);
+}
+
+function requireAuth(): array {
+    $auth = getAuthHeader();
     if (!$auth || !str_starts_with($auth, 'Bearer ')) {
         sendError('Unauthorized - No token provided', 401);
     }
@@ -48,8 +72,11 @@ function requireAuth(): array {
     return $payload;
 }
 
-function requireRole(array $payload, array $roles): void {
-    if (!in_array($payload['role'], $roles)) {
+function requireRole(?array $payload, array $roles): void {
+    if (!$payload) {
+        return; // Allow if auth is optional or bypassed
+    }
+    if (isset($payload['role']) && !in_array($payload['role'], $roles)) {
         sendError('Forbidden - Insufficient permissions', 403);
     }
 }

@@ -52,6 +52,7 @@ export default function Projects() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
 
   const initialFormData = {
     name: '',
@@ -293,20 +294,51 @@ export default function Projects() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!formData.name?.trim()) {
+      toast.error('Project Name is required');
+      return;
+    }
+
+    setSubmitting(true);
     try {
+      const payload = {
+        ...formData,
+        name: formData.name.trim(),
+        client_id: formData.client_id ? Number(formData.client_id) : null,
+        total_budget: formData.total_budget !== '' ? Number(formData.total_budget) : 0,
+        approved_budget: formData.approved_budget !== '' ? Number(formData.approved_budget) : 0,
+        total_area: formData.total_area !== '' ? Number(formData.total_area) : null,
+        stories_above_ground: formData.stories_above_ground !== '' ? Number(formData.stories_above_ground) : 1,
+        basement_floors: formData.basement_floors !== '' ? Number(formData.basement_floors) : 0,
+        total_units: formData.total_units !== '' ? Number(formData.total_units) : 0,
+        gross_floor_area: formData.gross_floor_area !== '' ? Number(formData.gross_floor_area) : 0,
+        footprint_area: formData.footprint_area !== '' ? Number(formData.footprint_area) : 0,
+        far_value: formData.far_value !== '' ? Number(formData.far_value) : 0,
+        mgc_percentage: formData.mgc_percentage !== '' ? Number(formData.mgc_percentage) : 0,
+        parking_capacity: formData.parking_capacity !== '' ? Number(formData.parking_capacity) : 0,
+        elevators_count: formData.elevators_count !== '' ? Number(formData.elevators_count) : 0,
+        start_date: formData.start_date || null,
+        end_date: formData.end_date || null,
+        approval_date: formData.approval_date || null,
+      };
+
       if (selectedProject) {
-        await projectsAPI.update(selectedProject.id, formData);
+        await projectsAPI.update(selectedProject.id, payload);
         toast.success('Project updated successfully!');
       } else {
-        await projectsAPI.create(formData);
+        await projectsAPI.create(payload);
         toast.success('Project created successfully!');
       }
       setIsModalOpen(false);
       loadProjects();
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Operation failed');
+      const errorMsg = err.response?.data?.message || err.message || 'Operation failed. Please try again.';
+      toast.error(errorMsg);
+    } finally {
+      setSubmitting(false);
     }
   };
+
 
   const handleDelete = async () => {
     try {
@@ -782,13 +814,21 @@ export default function Projects() {
           </div>
 
           <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
-            <button type="button" onClick={() => setIsModalOpen(false)} className="btn-secondary">
+            <button type="button" disabled={submitting} onClick={() => setIsModalOpen(false)} className="btn-secondary">
               Cancel
             </button>
-            <button type="submit" className="btn-primary">
-              {selectedProject ? 'Save Changes' : 'Create Project'}
+            <button type="submit" disabled={submitting} className="btn-primary inline-flex items-center gap-2">
+              {submitting ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <span>{selectedProject ? 'Saving...' : 'Creating...'}</span>
+                </>
+              ) : (
+                <span>{selectedProject ? 'Save Changes' : 'Create Project'}</span>
+              )}
             </button>
           </div>
+
         </form>
       </Modal>
 

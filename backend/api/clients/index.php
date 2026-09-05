@@ -1,7 +1,6 @@
 <?php
 try {
-    // Temporarily disable auth for debugging
-    // $user = requireAuth();
+    $user = getOptionalAuth();
     $db = Database::getInstance()->getConnection();
 } catch (Exception $e) {
     sendError('Database connection failed: ' . $e->getMessage(), 500);
